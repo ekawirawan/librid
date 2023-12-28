@@ -10,11 +10,18 @@ import retrofit2.http.Headers;
 import retrofit2.http.Query;
 
 public interface ApiInterfaceBook {
-    String API_KEY = "apikey b56FW7ZYRpVVF570B7nxNIWdz5xDtV3H6VUK0pRFI5wp8IGCtFWk2UNAVEXQTS9NYnLUcAV193Pia8mZ";
+    String API_KEY = "b56FW7ZYRpVVF570B7nxNIWdz5xDtV3H6VUK0pRFI5wp8IGCtFWk2UNAVEXQTS9NYnLUcAV193Pia8mZ";
 
     @Headers({"Content-Type: application/json",
             "X-API-Key: " + API_KEY
     })
-    @GET("APIClientBook/book")
-    Call<ModelBook> getBookByTitle(@Query("title") String title);
+    @GET("/book")
+    Call<ModelAPIResBook> getBookByTitle(@Query("title") String title);
+
+    //get all loans
+    @Headers({"Content-Type: application/json",
+            "X-API-Key: " + API_KEY
+    })
+    @GET("/book")
+    Call<ModelAPIResBook> getAllBook();
 }
