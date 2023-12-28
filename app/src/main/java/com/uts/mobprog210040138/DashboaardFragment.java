@@ -13,14 +13,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.uts.mobprog210040138.models.ModelAPIResBook;
+import com.uts.mobprog210040138.models.ModelAPIResLoans;
 import com.uts.mobprog210040138.models.ModelBook;
 import com.uts.mobprog210040138.RecyclerViewCustomeAdapterBooks;
+import com.uts.mobprog210040138.models.ModelLoans;
 
 import java.util.List;
 
@@ -43,11 +46,16 @@ public class DashboaardFragment extends Fragment {
 
     //Variabel buku
     private List<ModelBook> data1;
+    private List<ModelLoans> data5;
     private RecyclerView recyclerBook;
     private RecyclerViewCustomeAdapterBooks customAdapter;
+
     private ModelAPIResBook result;
+    private ModelAPIResLoans result2;
     private Context ctx;
     private View view;
+
+    private TextView txtTotalBook, txtTotalLoan;
 
 
 
@@ -99,13 +107,15 @@ public class DashboaardFragment extends Fragment {
 
         //Inisialisasi id recyclerView dashboard
         recyclerBook = view.findViewById(R.id.recyclerBook);
-
+        txtTotalBook = view.findViewById(R.id.txtTotalBook);
+        txtTotalLoan = view.findViewById(R.id.txtTotalLoan);
         //Mengatur data yang akan ditampilkan
         LinearLayoutManager manager = new LinearLayoutManager(ctx);
         recyclerBook.setLayoutManager(manager);
         recyclerBook.setHasFixedSize(true);
 
         LoadData();
+        loadDataLoan();
 
         // Tambahkan event listener untuk ImageButton
         imageButton.setOnClickListener(new View.OnClickListener() {
@@ -149,6 +159,7 @@ public class DashboaardFragment extends Fragment {
                         customAdapter = new RecyclerViewCustomeAdapterBooks(ctx, data1);
                         recyclerBook.setAdapter(customAdapter);
                         customAdapter.notifyDataSetChanged();
+                        setTotalBook();
                     }
                 }
             }
@@ -159,6 +170,46 @@ public class DashboaardFragment extends Fragment {
             }
         });
 
+    }
+
+    APIInterfaceLoans apiServiceLoan = APIClient.getClient().create(APIInterfaceLoans.class);
+
+    public void loadDataLoan() {
+        Call<ModelAPIResLoans> getAllLoan = apiServiceLoan.getAllLoan();
+
+        getAllLoan.enqueue(new Callback<ModelAPIResLoans>() {
+            @Override
+            public void onResponse(Call<ModelAPIResLoans> call, Response<ModelAPIResLoans> response) {
+                if(response.code() !=200){
+                    Toast.makeText(getContext(), "Code " + response.code(), Toast.LENGTH_LONG).show();
+                }else {
+                    if (response.body() == null){
+
+                    }else{
+                        result2 = response.body();
+                        data5 = result2.getData();
+                        setTotalLoan();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ModelAPIResLoans> call, Throwable t) {
+
+            }
+        });
+    }
+
+    //menampilkan jumlah data buku melalui jumlah data yang di return
+    public void setTotalBook() {
+        Integer totalDataReturn = data1.size();
+        txtTotalBook.setText(totalDataReturn.toString());
+
+    }
+
+    public void setTotalLoan() {
+        Integer totalDataReturn = data5.size();
+        txtTotalLoan.setText(totalDataReturn.toString());
     }
 
 

@@ -68,7 +68,7 @@ public class RecyclerViewCustomeAdapterBooks extends RecyclerView.Adapter<Recycl
         ModelBook book = data.get(position);
         holder.txtTitle.setText(book.getTitle());
         holder.txtAuthor.setText(book.getAuthor());
-        holder.txtStock.setText(book.getStock().toString());
+        holder.txtStock.setText("Stock: " + book.getStock().toString());
         ImageView imageView = holder.imageView;
         if (ctx != null && !((AppCompatActivity) ctx).isFinishing()) {
             Glide.with(ctx)
