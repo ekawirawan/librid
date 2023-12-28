@@ -74,7 +74,7 @@
             android:layout_marginTop="17dp"
             android:layout_marginBottom="16dp"
             android:fontFamily="@font/roboto_medium"
-            android:text="TextView"
+            android:text="0 Member"
             android:textSize="14sp"
             app:layout_constraintBottom_toTopOf="@+id/recyclerViewMember"
             app:layout_constraintStart_toStartOf="parent"

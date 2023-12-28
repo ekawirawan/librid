@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.uts.mobprog210040138.models.ModelAPIResMember;
@@ -32,6 +33,7 @@ public class MembersFragment extends Fragment {
     RecyclerView recyclerView1;
     ModelAPIResMember result;
     List<ModelMember> data1;
+    TextView txtJumlahMember;
     RecyclerViewCustomAdapterMembers adapterMember;
     private View view;
 
@@ -110,9 +112,9 @@ public class MembersFragment extends Fragment {
                     }else {
                         result = response.body();
                         data1 = result.getData();
-
                         adapterMember = new RecyclerViewCustomAdapterMembers(ctx, data1);
                         recyclerView1.setAdapter(adapterMember);
+                        setTotalMember();
                     }
                 }
             }
@@ -123,4 +125,13 @@ public class MembersFragment extends Fragment {
             }
         });
     }
+
+    public void setTotalMember(){
+        String wordMember = "Member";
+        txtJumlahMember = view.findViewById(R.id.txtJumlahMember);
+        Integer totalDataReturn = data1.size();
+        if(totalDataReturn > 1) {wordMember = "Member";}
+        txtJumlahMember.setText(totalDataReturn.toString() + " " + wordMember);
+    }
+
 }
