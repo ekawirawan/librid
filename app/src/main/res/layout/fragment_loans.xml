@@ -32,12 +32,15 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="10dp"
             android:backgroundTint="#2A810C"
-            android:text="+ Add Loan"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            android:text="Add Loan"
+            app:icon="@android:drawable/ic_input_add"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <SearchView
-            android:id="@+id/searchView"
+            android:id="@+id/searchViewLoan"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_marginStart="10dp"
@@ -73,6 +76,6 @@
             android:layout_marginTop="30dp"
             android:fontFamily="@font/roboto"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/searchView" />
+            app:layout_constraintTop_toBottomOf="@+id/searchViewLoan" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

@@ -28,8 +28,8 @@ public interface APIInterfaceLoans {
     @Headers({"Content-Type: application/json",
             "X-API-Key: " + API_KEY
     })
-    @GET("/loan")
-    Call<ModelAPIResLoans> getAllLoanByUsername(@Query("username") String query);
+    @GET("/loan/search")
+    Call<ModelAPIResLoans> getAllLoanByUsername(@Query("usernameBorrower") String query);
 
     //create a loan
     @Headers({"Content-Type: application/json",
