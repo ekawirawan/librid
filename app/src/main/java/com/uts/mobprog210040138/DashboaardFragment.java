@@ -21,9 +21,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.uts.mobprog210040138.models.ModelAPIResBook;
 import com.uts.mobprog210040138.models.ModelAPIResLoans;
+import com.uts.mobprog210040138.models.ModelAPIResMember;
 import com.uts.mobprog210040138.models.ModelBook;
 import com.uts.mobprog210040138.RecyclerViewCustomeAdapterBooks;
 import com.uts.mobprog210040138.models.ModelLoans;
+import com.uts.mobprog210040138.models.ModelMember;
 
 import java.util.List;
 
@@ -47,15 +49,17 @@ public class DashboaardFragment extends Fragment {
     //Variabel buku
     private List<ModelBook> data1;
     private List<ModelLoans> data5;
+    private List<ModelMember> data6;
     private RecyclerView recyclerBook;
     private RecyclerViewCustomeAdapterBooks customAdapter;
 
     private ModelAPIResBook result;
     private ModelAPIResLoans result2;
+    private ModelAPIResMember result3;
     private Context ctx;
     private View view;
 
-    private TextView txtTotalBook, txtTotalLoan;
+    private TextView txtTotalBook, txtTotalLoan, txtTotalMember;
 
 
 
@@ -109,6 +113,7 @@ public class DashboaardFragment extends Fragment {
         recyclerBook = view.findViewById(R.id.recyclerBook);
         txtTotalBook = view.findViewById(R.id.txtTotalBook);
         txtTotalLoan = view.findViewById(R.id.txtTotalLoan);
+        txtTotalMember = view.findViewById(R.id.txtTotalMember);
         //Mengatur data yang akan ditampilkan
         LinearLayoutManager manager = new LinearLayoutManager(ctx);
         recyclerBook.setLayoutManager(manager);
@@ -116,6 +121,7 @@ public class DashboaardFragment extends Fragment {
 
         LoadData();
         loadDataLoan();
+        loadDataMembers();
 
         // Tambahkan event listener untuk ImageButton
         imageButton.setOnClickListener(new View.OnClickListener() {
@@ -200,6 +206,34 @@ public class DashboaardFragment extends Fragment {
         });
     }
 
+    APIInterfaceMembers apiServiceMember = APIClient.getClient().create(APIInterfaceMembers.class);
+
+    public void loadDataMembers() {
+        Call<ModelAPIResMember> getAllMember = apiServiceMember.getAllMember();
+
+        getAllMember.enqueue(new Callback<ModelAPIResMember>() {
+            @Override
+            public void onResponse(Call<ModelAPIResMember> call, Response<ModelAPIResMember> response) {
+                if(response.code() !=200){
+                    Toast.makeText(getContext(), "Code " + response.code(), Toast.LENGTH_LONG).show();
+                }else {
+                    if(response.body() == null){
+
+                    }else {
+                        result3 = response.body();
+                        data6 = result3.getData();
+                        SetTotalMembers();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ModelAPIResMember> call, Throwable t) {
+
+            }
+        });
+    }
+
     //menampilkan jumlah data buku melalui jumlah data yang di return
     public void setTotalBook() {
         Integer totalDataReturn = data1.size();
@@ -210,6 +244,11 @@ public class DashboaardFragment extends Fragment {
     public void setTotalLoan() {
         Integer totalDataReturn = data5.size();
         txtTotalLoan.setText(totalDataReturn.toString());
+    }
+
+    public void SetTotalMembers() {
+        Integer totalDataReturn = data6.size();
+        txtTotalMember.setText(totalDataReturn.toString());
     }
 
 
