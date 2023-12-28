@@ -1,4 +1,5 @@
 package com.uts.mobprog210040138;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,21 +16,20 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.uts.mobprog210040138.models.ModelBook;
 
-
-public class RecyclerViewCustomeAdapterBooks extends RecyclerView.Adapter<RecyclerViewCustomeAdapterBooks.ViewHolder> {
+public class RecycleViewSearchAdapter extends RecyclerView.Adapter<RecycleViewSearchAdapter.ViewHolder> {
     Context ctx;
 
-    public static ClickListener clickListener;
+    public static RecycleViewSearchAdapter.ClickListener clickListener;
 
     List<ModelBook> data;
 
-    public RecyclerViewCustomeAdapterBooks(Context context, List<ModelBook> dataBook) {
+    public RecycleViewSearchAdapter(Context context, List<ModelBook> dataBook) {
         ctx = context;
         data = dataBook;
     }
 
-    public void setOnItemCLickListener(ClickListener clickListener){
-        RecyclerViewCustomeAdapterBooks.clickListener = clickListener;
+    public void setOnItemCLickListener(RecycleViewSearchAdapter.ClickListener clickListener){
+        RecycleViewSearchAdapter.clickListener = clickListener;
     }
 
     public interface ClickListener {
@@ -37,15 +37,13 @@ public class RecyclerViewCustomeAdapterBooks extends RecyclerView.Adapter<Recycl
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        public TextView txtTitle, txtAuthor, txtStock;
-        public ImageView imageView;
+        public TextView txtTitle2;
+        public ImageView imageView3;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            imageView = itemView.findViewById(R.id.imageView);
-            txtTitle = itemView.findViewById(R.id.txtTitle);
-            txtAuthor = itemView.findViewById(R.id.txtAuthor);
-            txtStock = itemView.findViewById(R.id.txtStock);
+            imageView3 = itemView.findViewById(R.id.imageView3);
+            txtTitle2 = itemView.findViewById(R.id.txtTitle2);
             itemView.setOnClickListener(this);
         }
 
@@ -55,25 +53,23 @@ public class RecyclerViewCustomeAdapterBooks extends RecyclerView.Adapter<Recycl
 
     @NonNull
     @Override
-    public RecyclerViewCustomeAdapterBooks.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public RecycleViewSearchAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View v = inflater.inflate(R.layout.list_data_buku, parent, false);
+        View v = inflater.inflate(R.layout.item_list, parent, false);
 
-        return new ViewHolder(v);
+        return new RecycleViewSearchAdapter.ViewHolder(v);
     }
 
-    //belummmm
+
     @Override
-    public void onBindViewHolder(@NonNull RecyclerViewCustomeAdapterBooks.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecycleViewSearchAdapter.ViewHolder holder, int position) {
         ModelBook book = data.get(position);
-        holder.txtTitle.setText(book.getTitle());
-        holder.txtAuthor.setText(book.getAuthor());
-        holder.txtStock.setText(book.getStock().toString());
-        ImageView imageView = holder.imageView;
+        holder.txtTitle2.setText(book.getTitle());
+        ImageView imageView = holder.imageView3;
         if (ctx != null && !((AppCompatActivity) ctx).isFinishing()) {
             Glide.with(ctx)
                     .load(R.drawable.none)
-                    .into(holder.imageView);
+                    .into(holder.imageView3);
         }
     }
     @Override
@@ -81,6 +77,9 @@ public class RecyclerViewCustomeAdapterBooks extends RecyclerView.Adapter<Recycl
         return data.size();
     }
 
+    public void setFilteredBooks(List<ModelBook> filteredBooks) {
+        this.data = filteredBooks;
+        notifyDataSetChanged();
+    }
+
 }
-
-

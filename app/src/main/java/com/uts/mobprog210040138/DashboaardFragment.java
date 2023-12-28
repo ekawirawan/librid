@@ -1,13 +1,28 @@
 package com.uts.mobprog210040138;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.Toast;
+
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.uts.mobprog210040138.models.ModelAPIResBook;
+import com.uts.mobprog210040138.models.ModelBook;
+import com.uts.mobprog210040138.RecyclerViewCustomeAdapterBooks;
+
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -25,6 +40,14 @@ public class DashboaardFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    //Variabel buku
+    private List<ModelBook> data1;
+    private RecyclerView recyclerBook;
+    private RecyclerViewCustomeAdapterBooks customAdapter;
+    private ModelAPIResBook result;
+    private Context ctx;
+    private View view;
 
 
 
@@ -74,6 +97,16 @@ public class DashboaardFragment extends Fragment {
         // Temukan ImageButton dari layout
         imageButton = view.findViewById(R.id.imageButton3);
 
+        //Inisialisasi id recyclerView dashboard
+        recyclerBook = view.findViewById(R.id.recyclerBook);
+
+        //Mengatur data yang akan ditampilkan
+        LinearLayoutManager manager = new LinearLayoutManager(ctx);
+        recyclerBook.setLayoutManager(manager);
+        recyclerBook.setHasFixedSize(true);
+
+        LoadData();
+
         // Tambahkan event listener untuk ImageButton
         imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,5 +130,36 @@ public class DashboaardFragment extends Fragment {
                 .addToBackStack(null)
                 .commit();
     }
+
+    ApiInterfaceBook apiServices = APIClient.getClient().create(ApiInterfaceBook.class);
+    public void LoadData(){
+        Call<ModelAPIResBook> getDataBooks = apiServices.getAllBook();
+
+        getDataBooks.enqueue(new Callback<ModelAPIResBook>() {
+            @Override
+            public void onResponse(Call<ModelAPIResBook> call, Response<ModelAPIResBook> response) {
+                if(response.code() !=200){
+                    Toast.makeText(getContext(), "Code " + response.code(), Toast.LENGTH_LONG).show();
+                }else {
+                    if (response.body() == null){
+
+                    }else{
+                        result = response.body();
+                        data1 = result.getData();
+                        customAdapter = new RecyclerViewCustomeAdapterBooks(ctx, data1);
+                        recyclerBook.setAdapter(customAdapter);
+                        customAdapter.notifyDataSetChanged();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ModelAPIResBook> call, Throwable t) {
+
+            }
+        });
+
+    }
+
 
 }
