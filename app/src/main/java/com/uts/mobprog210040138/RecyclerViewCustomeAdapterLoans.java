@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.List;
@@ -37,7 +38,7 @@ public class RecyclerViewCustomeAdapterLoans extends RecyclerView.Adapter<Recycl
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        public TextView txtTitle, txtUsername, txtBorrowerAt;
+        public TextView txtTitle, txtUsername, txtBorrowerAt, txtStatusReturned;
         public Button btnReturn;
 
         public ViewHolder(@NonNull View itemView) {
@@ -45,6 +46,7 @@ public class RecyclerViewCustomeAdapterLoans extends RecyclerView.Adapter<Recycl
             txtTitle = itemView.findViewById(R.id.txtTitleBook);
             txtUsername = itemView.findViewById(R.id.txtUsernameBorrower);
             txtBorrowerAt = itemView.findViewById(R.id.txtBorrowedAt);
+            txtStatusReturned = itemView.findViewById(R.id.txtStatusReturned);
             btnReturn = itemView.findViewById(R.id.btnReturn);
             itemView.setOnClickListener(this);
         }
@@ -68,16 +70,26 @@ public class RecyclerViewCustomeAdapterLoans extends RecyclerView.Adapter<Recycl
         holder.txtTitle.setText(loans.getBook().getTitle());
         holder.txtUsername.setText(loans.getBorrower().getUsername());
         holder.txtBorrowerAt.setText(loans.getBorrowedAt());
+
+
+
         if(!loans.getReturnStatus().equals("NOT_YET_RETURNED")) {
             holder.btnReturn.setText("Return");
+            holder.btnReturn.setVisibility(View.VISIBLE);
         } else {
             if(loans.getReturnStatus().equals("RETURNED")) {
-                holder.btnReturn.setText("✓ Returned");
+                holder.txtStatusReturned.setText("✓ Returned");
+
             } else {
-                holder.btnReturn.setText("✓ Returned late");
+                holder.txtStatusReturned.setText("✓ Returned late");
             }
+            holder.btnReturn.setVisibility(View.INVISIBLE);
+            holder.txtStatusReturned.setVisibility(View.VISIBLE);
+            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) holder.btnReturn.getLayoutParams();
+            params.setMargins(0, 0, 0, 0);
+            holder.btnReturn.setLayoutParams(params);
             holder.btnReturn.setEnabled(false);
-            holder.btnReturn.setBackgroundTintList(ContextCompat.getColorStateList(ctx, R.color.white));
+
         }
     }
     @Override

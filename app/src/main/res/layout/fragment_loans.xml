@@ -72,7 +72,6 @@
             android:layout_marginStart="10dp"
             android:layout_marginTop="30dp"
             android:fontFamily="@font/roboto"
-            android:text="0 Loan"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/searchView" />
     </androidx.constraintlayout.widget.ConstraintLayout>
