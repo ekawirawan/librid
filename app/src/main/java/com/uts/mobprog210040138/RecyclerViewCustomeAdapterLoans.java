@@ -6,15 +6,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.List;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import com.uts.mobprog210040138.models.ModelLoans;
+import com.uts.mobprog210040138.helpers.DateFormatterHelpers;
 
 
 public class RecyclerViewCustomeAdapterLoans extends RecyclerView.Adapter<RecyclerViewCustomeAdapterLoans.ViewHolder> {
@@ -69,8 +68,8 @@ public class RecyclerViewCustomeAdapterLoans extends RecyclerView.Adapter<Recycl
         ModelLoans loans = data.get(position);
         holder.txtTitle.setText(loans.getBook().getTitle());
         holder.txtUsername.setText(loans.getBorrower().getUsername());
-        holder.txtBorrowerAt.setText(loans.getBorrowedAt());
 
+        holder.txtBorrowerAt.setText(DateFormatterHelpers.formatShortDate(loans.getBorrowedAt()));
 
 
         if(!loans.getReturnStatus().equals("NOT_YET_RETURNED")) {
@@ -78,10 +77,10 @@ public class RecyclerViewCustomeAdapterLoans extends RecyclerView.Adapter<Recycl
             holder.btnReturn.setVisibility(View.VISIBLE);
         } else {
             if(loans.getReturnStatus().equals("RETURNED")) {
-                holder.txtStatusReturned.setText("✓ Returned");
+                holder.txtStatusReturned.setText("Returned");
 
             } else {
-                holder.txtStatusReturned.setText("✓ Returned late");
+                holder.txtStatusReturned.setText("Returned late");
             }
             holder.btnReturn.setVisibility(View.INVISIBLE);
             holder.txtStatusReturned.setVisibility(View.VISIBLE);
