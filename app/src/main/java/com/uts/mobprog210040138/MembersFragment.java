@@ -7,13 +7,18 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.uts.mobprog210040138.models.ModelAPIResMember;
+import com.uts.mobprog210040138.models.ModelLoans;
 import com.uts.mobprog210040138.models.ModelMember;
 
 import java.util.List;
@@ -30,10 +35,13 @@ import retrofit2.Response;
 public class MembersFragment extends Fragment {
 
     Context ctx;
+    APIInterfaceMembers apiService = APIClient.getClient().create(APIInterfaceMembers.class);
     RecyclerView recyclerView1;
     ModelAPIResMember result;
-    List<ModelMember> data1;
+    List<ModelMember> data1, dataResSearch1;
+
     TextView txtJumlahMember;
+    SearchView searchViewMember;
     RecyclerViewCustomAdapterMembers adapterMember;
     private View view;
 
@@ -85,21 +93,22 @@ public class MembersFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_members, container, false);
         recyclerView1 = view.findViewById(R.id.recyclerViewMember);
 
+        searchViewMember = view.findViewById(R.id.searchViewMember);
+
         LinearLayoutManager manager = new LinearLayoutManager(ctx);
         recyclerView1.setLayoutManager(manager);
         recyclerView1.setHasFixedSize(true);
 
         loadDataMember();
+        searchMember();
 
         return view;
         //return inflater.inflate(R.layout.fragment_members, container, false);
     }
 
-    public void loadDataMember() {
-        APIInterfaceMembers apiService;
-        apiService = APIClient.getClient().create(APIInterfaceMembers.class);
-        Call<ModelAPIResMember> getAllMember = apiService.getAllMember();
 
+    public void loadDataMember() {
+        Call<ModelAPIResMember> getAllMember = apiService.getAllMember();
         getAllMember.enqueue(new Callback<ModelAPIResMember>() {
             @Override
             public void onResponse(Call<ModelAPIResMember> call, Response<ModelAPIResMember> response) {
@@ -114,7 +123,7 @@ public class MembersFragment extends Fragment {
                         data1 = result.getData();
                         adapterMember = new RecyclerViewCustomAdapterMembers(ctx, data1);
                         recyclerView1.setAdapter(adapterMember);
-                        setTotalMember();
+                        setTotalMember(data1);
                     }
                 }
             }
@@ -126,7 +135,69 @@ public class MembersFragment extends Fragment {
         });
     }
 
-    public void setTotalMember(){
+    public void searchMember() {
+        searchViewMember.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                String query = newText.trim().toLowerCase();
+
+                // Cek apakah teks pencarian tidak kosong
+                if (!query.isEmpty()) {
+                    // Lakukan pencarian dan perbarui RecyclerView
+                    performSearch(query);
+                } else {
+                    // Jika teks pencarian kosong, kembalikan ke data awal
+                    resetSearch();
+                }
+
+                return true;
+            }
+        });
+
+    }
+
+
+    public void performSearch(String query) {
+        Log.d("Query", query);
+        Call<ModelAPIResMember> getAllMemberByUsername = apiService.getAllMemberByUsername(query.trim().toLowerCase());
+        getAllMemberByUsername.enqueue(new Callback<ModelAPIResMember>() {
+            @Override
+            public void onResponse(Call<ModelAPIResMember> call, Response<ModelAPIResMember> response) {
+                if (response.code() != 200) {
+
+                } else {
+                    if (response.body() == null) {
+
+                    } else {
+                        result = response.body();
+                        dataResSearch1 = result.getData();
+                        Log.d("Search Results", dataResSearch1.toString());
+                        adapterMember = new RecyclerViewCustomAdapterMembers(ctx, dataResSearch1);
+                        recyclerView1.setAdapter(adapterMember);
+                        setTotalMember(dataResSearch1);
+                    }
+                }
+            }
+            @Override
+            public void onFailure(Call<ModelAPIResMember> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void resetSearch() {
+        // Kembalikan ke data awal atau tampilkan semua data
+        adapterMember = new RecyclerViewCustomAdapterMembers(ctx, data1);
+        recyclerView1.setAdapter(adapterMember);
+        setTotalMember(data1);
+    }
+
+    public void setTotalMember(List<ModelMember>data1){
         String wordMember = "Member";
         txtJumlahMember = view.findViewById(R.id.txtJumlahMember);
         Integer totalDataReturn = data1.size();
