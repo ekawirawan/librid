@@ -37,15 +37,15 @@ public class RecyclerViewCustomeAdapterBooks extends RecyclerView.Adapter<Recycl
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        public TextView txtTitle, txtAuthor, txtStock;
-        public ImageView imageView;
+        public TextView txtTitle3, txtAuthor3, txtStock3;
+        public ImageView imageView4;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            imageView = itemView.findViewById(R.id.imageView);
-            txtTitle = itemView.findViewById(R.id.txtTitle);
-            txtAuthor = itemView.findViewById(R.id.txtAuthor);
-            txtStock = itemView.findViewById(R.id.txtStock);
+            imageView4 = itemView.findViewById(R.id.imageView4);
+            txtTitle3 = itemView.findViewById(R.id.txtTitle3);
+            txtAuthor3 = itemView.findViewById(R.id.txtAuthor3);
+            txtStock3 = itemView.findViewById(R.id.txtStock3);
             itemView.setOnClickListener(this);
         }
 
@@ -57,7 +57,7 @@ public class RecyclerViewCustomeAdapterBooks extends RecyclerView.Adapter<Recycl
     @Override
     public RecyclerViewCustomeAdapterBooks.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View v = inflater.inflate(R.layout.list_data_buku, parent, false);
+        View v = inflater.inflate(R.layout.list_data_buku2, parent, false);
 
         return new ViewHolder(v);
     }
@@ -66,14 +66,14 @@ public class RecyclerViewCustomeAdapterBooks extends RecyclerView.Adapter<Recycl
     @Override
     public void onBindViewHolder(@NonNull RecyclerViewCustomeAdapterBooks.ViewHolder holder, int position) {
         ModelBook book = data.get(position);
-        holder.txtTitle.setText(book.getTitle());
-        holder.txtAuthor.setText(book.getAuthor());
-        holder.txtStock.setText("Stock: " + book.getStock().toString());
-        ImageView imageView = holder.imageView;
+        holder.txtTitle3.setText(book.getTitle());
+        holder.txtAuthor3.setText(book.getAuthor());
+        holder.txtStock3.setText("Stock: " + book.getStock().toString());
+        ImageView imageView = holder.imageView4;
         if (ctx != null && !((AppCompatActivity) ctx).isFinishing()) {
             Glide.with(ctx)
                     .load(R.drawable.none)
-                    .into(holder.imageView);
+                    .into(holder.imageView4);
         }
     }
     @Override
