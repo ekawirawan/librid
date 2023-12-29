@@ -3,6 +3,7 @@ package com.uts.mobprog210040138;
 import android.content.Context;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import retrofit2.Call;
@@ -60,6 +61,7 @@ public class DashboaardFragment extends Fragment {
     private View view;
 
     private TextView txtTotalBook, txtTotalLoan, txtTotalMember;
+    private AlertDialog alertDialog1;
 
 
 
@@ -109,6 +111,8 @@ public class DashboaardFragment extends Fragment {
         // Temukan ImageButton dari layout
         imageButton = view.findViewById(R.id.imageButton3);
 
+        customAdapter = new RecyclerViewCustomeAdapterBooks(ctx, data1);
+
         //Inisialisasi id recyclerView dashboard
         recyclerBook = view.findViewById(R.id.recyclerBook);
         txtTotalBook = view.findViewById(R.id.txtTotalBook);
@@ -130,6 +134,14 @@ public class DashboaardFragment extends Fragment {
                 // Panggil metode atau tindakan untuk membuka SearchListFragment
                 openSearchListFragment();
             }
+
+        });
+
+        customAdapter.setOnItemCLickListener(new RecyclerViewCustomeAdapterBooks.ClickListener() {
+            @Override
+            public void onItemClick(int position, View view) {
+                //loadDialogView();
+            }
         });
 
         return view;
@@ -137,10 +149,8 @@ public class DashboaardFragment extends Fragment {
 
     // Metode untuk membuka SearchListFragment
     private void openSearchListFragment() {
-        // Buat instance dari SearchListFragment
         SearchListFragment searchListFragment = new SearchListFragment();
 
-        // Ganti fragment di dalam container (contoh: menggunakan R.id.fragment_container)
         getParentFragmentManager().beginTransaction()
                 .replace(R.id.dashboard_fragment, searchListFragment)
                 .addToBackStack(null)
@@ -169,6 +179,7 @@ public class DashboaardFragment extends Fragment {
                     }
                 }
             }
+
 
             @Override
             public void onFailure(Call<ModelAPIResBook> call, Throwable t) {
@@ -240,16 +251,43 @@ public class DashboaardFragment extends Fragment {
         txtTotalBook.setText(totalDataReturn.toString());
 
     }
-
+    //menampilkan jumlah data loan melalui jumlah data yang di return
     public void setTotalLoan() {
         Integer totalDataReturn = data5.size();
         txtTotalLoan.setText(totalDataReturn.toString());
     }
-
+    //menampilkan jumlah data member melalui jumlah data yang di return
     public void SetTotalMembers() {
         Integer totalDataReturn = data6.size();
         txtTotalMember.setText(totalDataReturn.toString());
     }
 
 
+
+    public void loadDialogView() {
+    Call<ModelAPIResBook> getAllBook = apiServices.getAllBook();
+    getAllBook.enqueue(new Callback<ModelAPIResBook>() {
+        @Override
+        public void onResponse(Call<ModelAPIResBook> call, Response<ModelAPIResBook> response) {
+            if(response.code() !=200){
+                Toast.makeText(getContext(), "Code " + response.code(), Toast.LENGTH_LONG).show();
+            }else {
+                if (response.body() == null){
+
+                }else{
+                    result = response.body();
+                    data1 = result.getData();
+
+
+                    //belum selesai alertDialog inget tambahin dibawah sini
+                }
+            }
+        }
+
+        @Override
+        public void onFailure(Call<ModelAPIResBook> call, Throwable t) {
+
+        }
+    });
+    }
 }

@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 
+
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -37,13 +38,13 @@ public class RecycleViewSearchAdapter extends RecyclerView.Adapter<RecycleViewSe
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        public TextView txtTitle2;
-        public ImageView imageView3;
+        public TextView txtTitle4;
+        public ImageView imageView7;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            imageView3 = itemView.findViewById(R.id.imageView3);
-            txtTitle2 = itemView.findViewById(R.id.txtTitle2);
+            imageView7 = itemView.findViewById(R.id.imageView7);
+            txtTitle4 = itemView.findViewById(R.id.txtTitle4);
             itemView.setOnClickListener(this);
         }
 
@@ -55,7 +56,7 @@ public class RecycleViewSearchAdapter extends RecyclerView.Adapter<RecycleViewSe
     @Override
     public RecycleViewSearchAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View v = inflater.inflate(R.layout.item_list, parent, false);
+        View v = inflater.inflate(R.layout.item_list2, parent, false);
 
         return new RecycleViewSearchAdapter.ViewHolder(v);
     }
@@ -64,12 +65,12 @@ public class RecycleViewSearchAdapter extends RecyclerView.Adapter<RecycleViewSe
     @Override
     public void onBindViewHolder(@NonNull RecycleViewSearchAdapter.ViewHolder holder, int position) {
         ModelBook book = data.get(position);
-        holder.txtTitle2.setText(book.getTitle());
-        ImageView imageView = holder.imageView3;
+        holder.txtTitle4.setText(book.getTitle());
+        ImageView imageView = holder.imageView7;
         if (ctx != null && !((AppCompatActivity) ctx).isFinishing()) {
             Glide.with(ctx)
                     .load(R.drawable.none)
-                    .into(holder.imageView3);
+                    .into(holder.imageView7);
         }
     }
     @Override
