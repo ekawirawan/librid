@@ -21,13 +21,13 @@
             android:text="List Of Members"
             android:textColor="#000000"
             android:textSize="20dp"
-            app:layout_constraintBottom_toTopOf="@+id/searchView"
+            app:layout_constraintBottom_toTopOf="@+id/searchViewMember"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0" />
 
         <SearchView
-            android:id="@+id/searchView"
+            android:id="@+id/searchViewMember"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_marginStart="10dp"
@@ -78,6 +78,6 @@
             android:textSize="14sp"
             app:layout_constraintBottom_toTopOf="@+id/recyclerViewMember"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/searchView" />
+            app:layout_constraintTop_toBottomOf="@+id/searchViewMember" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>
