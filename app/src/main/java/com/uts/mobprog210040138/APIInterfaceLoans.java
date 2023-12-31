@@ -2,6 +2,7 @@ package com.uts.mobprog210040138;
 
 
 import com.uts.mobprog210040138.models.ModelAPIResLoans;
+import com.uts.mobprog210040138.models.ModelAPIResSingleLoans;
 import com.uts.mobprog210040138.models.ModelLoans;
 
 import retrofit2.Call;
@@ -12,6 +13,7 @@ import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Headers;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface APIInterfaceLoans {
@@ -38,13 +40,22 @@ public interface APIInterfaceLoans {
     @POST("/loan")
     Call<ModelAPIResLoans> createLoan(@Body ModelLoans reqBody);
 
+    //get book by id
+    @Headers({"Content-Type: application/json",
+            "X-API-Key: " + API_KEY
+    })
+    @GET("/loan/{id}")
+    Call<ModelAPIResSingleLoans> getLoanById(
+            @Path("id") String loanId
+    );
+
     //update loan
     @Headers({"Content-Type: application/json",
             "X-API-Key: " + API_KEY
     })
-    @PUT("/loan")
-    Call<ModelAPIResLoans> updateLoan(
-            @Query("loan_id") String query,
+    @PUT("/loan/{id}")
+    Call<ModelAPIResSingleLoans> updateLoan(
+            @Path("id") String loanId,
             @Body ModelLoans reqBody
     );
 
@@ -52,18 +63,18 @@ public interface APIInterfaceLoans {
     @Headers({"Content-Type: application/json",
             "X-API-Key: " + API_KEY
     })
-    @DELETE("/loan")
-    Call<ModelAPIResLoans> deleteLoan (
-            @Query("loan_id") String query
+    @DELETE("/loan/{id}")
+    Call<ModelAPIResSingleLoans> deleteLoan (
+            @Path("id") String loanId
     );
 
     //update return status loan
     @Headers({"Content-Type: application/json",
             "X-API-Key: " + API_KEY
     })
-    @PATCH("/loan")
-    Call<ModelAPIResLoans> updateReturnStatusLoan (
-            @Query("loan_id") String query
+    @PATCH("/loan/return-status/{id}")
+    Call<ModelAPIResSingleLoans> updateReturnStatusLoan (
+            @Path("id") String loanId
     );
 
 
