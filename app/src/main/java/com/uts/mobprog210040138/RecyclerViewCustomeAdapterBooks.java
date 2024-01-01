@@ -4,6 +4,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 
@@ -18,6 +19,8 @@ import com.uts.mobprog210040138.models.ModelBook;
 
 public class RecyclerViewCustomeAdapterBooks extends RecyclerView.Adapter<RecyclerViewCustomeAdapterBooks.ViewHolder> {
     Context ctx;
+
+
 
     public static ClickListener clickListener;
 
@@ -42,6 +45,7 @@ public class RecyclerViewCustomeAdapterBooks extends RecyclerView.Adapter<Recycl
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+
             imageView4 = itemView.findViewById(R.id.imageView4);
             txtTitle3 = itemView.findViewById(R.id.txtTitle3);
             txtAuthor3 = itemView.findViewById(R.id.txtAuthor3);
@@ -52,6 +56,8 @@ public class RecyclerViewCustomeAdapterBooks extends RecyclerView.Adapter<Recycl
         @Override
         public void onClick(View view) { clickListener.onItemClick(getAdapterPosition(), view); }
     }
+
+
 
     @NonNull
     @Override
@@ -80,6 +86,8 @@ public class RecyclerViewCustomeAdapterBooks extends RecyclerView.Adapter<Recycl
     public int getItemCount() {
         return data.size();
     }
+
+
 
 }
 

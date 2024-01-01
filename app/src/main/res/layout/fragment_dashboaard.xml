@@ -166,13 +166,19 @@
                 android:textColor="#000000"
                 android:textSize="18dp" />
 
+            <ProgressBar
+                android:id="@+id/progressBar1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="100dp" />
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerBook"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                tools:listitem="@layout/list_data_buku2" />
+                android:layout_marginRight="10dp" />
 
         </LinearLayout>
 
