@@ -261,77 +261,77 @@ public class LoansFragment extends Fragment  {
         });
     }
 
-    public void showDetailLoans (int position) {
-        Call<ModelAPIResSingleLoans> getLoanById = apiService.getLoanById(dataLoan.get(position).getLoanId());
-        getLoanById.enqueue(new Callback<ModelAPIResSingleLoans>() {
-            @Override
-            public void onResponse(Call<ModelAPIResSingleLoans> call, Response<ModelAPIResSingleLoans> response) {
-                if (response.code() != 200) {
-
-                } else {
-                    if(response.body() == null) {
-
-                    } else {
-                        resultLoanSingle = response.body();
-                        dataLoanSingle = resultLoanSingle.getData();
-
-                        ViewGroup viewGroup = view.findViewById(android.R.id.content);
-                        View dialogView = LayoutInflater.from(ctx).inflate(R.layout.detail_data_loans, viewGroup, false);
-
-                        AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
-                        builder.setTitle("Informasi");
-                        builder.setIcon(android.R.drawable.ic_dialog_info);
-                        builder.setCancelable(false);
-
-                        TextView txtTitleBookLoan = dialogView.findViewById(R.id.txtTitleBookLoan);
-                        TextView txtUsernameLoans = dialogView.findViewById(R.id.txtUsernameLoans);
-                        TextView txtStatusLoans = dialogView.findViewById(R.id.txtStatusLoans);
-                        TextView txtBorrowedAtLoans = dialogView.findViewById(R.id.txtBorrowedAtLoans);
-                        TextView txtDueDateLoans = dialogView.findViewById(R.id.txtDueDateLoans);
-                        TextView txtReturnedAtLoans = dialogView.findViewById(R.id.txtReturnedAtLoans);
-
-                        builder.setView(dialogView);
-
-                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                dialogInterface.dismiss();
-                            }
-                        });
-
-                        txtTitleBookLoan.setText(dataLoanSingle.getBook().getTitle());
-                        txtUsernameLoans.setText(dataLoanSingle.getBorrower().getUsername());
-
-                        if (ReturnStatus.NOT_YET_RETURNED.name().equals(dataLoanSingle.getReturnStatus())) {
-                            TextViewStyle.textStatusReturnedStyle("NOT YET RETURNED", txtStatusLoans, TextViewStyle.TypeStyle.WARNING, ctx);
-                        } else if (ReturnStatus.RETURNED.name().equals(dataLoanSingle.getReturnStatus())) {
-                            TextViewStyle.textStatusReturnedStyle("RETURNED", txtStatusLoans, TextViewStyle.TypeStyle.SUCCESS, ctx);
-                        } else if (ReturnStatus.RETURNED_LATE.name().equals(dataLoanSingle.getReturnStatus())) {
-                            TextViewStyle.textStatusReturnedStyle("RETURNED LATE", txtStatusLoans, TextViewStyle.TypeStyle.DANGER, ctx);
-                        } else {
-                            TextViewStyle.textStatusReturnedStyle("INVALID", txtStatusLoans, TextViewStyle.TypeStyle.DANGER, ctx);
-                        }
-
-
-                        txtBorrowedAtLoans.setText(DateFormatterHelpers.formatLongDate(dataLoanSingle.getBorrowedAt()));
-                        txtDueDateLoans.setText(DateFormatterHelpers.formatLongDate(dataLoanSingle.getDueDate()));
-                        if (dataLoanSingle.getReturnedAt() == null)
-                            txtReturnedAtLoans.setText("-");
-                        else {
-                            txtReturnedAtLoans.setText(DateFormatterHelpers.formatLongDate(dataLoanSingle.getReturnedAt()));
-                        }
-
-                        AlertDialog alertDialog = builder.create();
-                        alertDialog.show();
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ModelAPIResSingleLoans> call, Throwable t) {
-
-            }
-        });
-    }
+//    public void showDetailLoans (int position) {
+//        Call<ModelAPIResSingleLoans> getLoanById = apiService.getLoanById(dataLoan.get(position).getLoanId());
+//        getLoanById.enqueue(new Callback<ModelAPIResSingleLoans>() {
+//            @Override
+//            public void onResponse(Call<ModelAPIResSingleLoans> call, Response<ModelAPIResSingleLoans> response) {
+//                if (response.code() != 200) {
+//
+//                } else {
+//                    if(response.body() == null) {
+//
+//                    } else {
+//                        resultLoanSingle = response.body();
+//                        dataLoanSingle = resultLoanSingle.getData();
+//
+//                        ViewGroup viewGroup = view.findViewById(android.R.id.content);
+//                        View dialogView = LayoutInflater.from(ctx).inflate(R.layout.detail_data_loans, viewGroup, false);
+//
+//                        AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+//                        builder.setTitle("Informasi");
+//                        builder.setIcon(android.R.drawable.ic_dialog_info);
+//                        builder.setCancelable(false);
+//
+//                        TextView txtTitleBookLoan = dialogView.findViewById(R.id.txtTitleBookLoan);
+//                        TextView txtUsernameLoans = dialogView.findViewById(R.id.txtUsernameLoans);
+//                        TextView txtStatusLoans = dialogView.findViewById(R.id.txtStatusLoans);
+//                        TextView txtBorrowedAtLoans = dialogView.findViewById(R.id.txtBorrowedAtLoans);
+//                        TextView txtDueDateLoans = dialogView.findViewById(R.id.txtDueDateLoans);
+//                        TextView txtReturnedAtLoans = dialogView.findViewById(R.id.txtReturnedAtLoans);
+//
+//                        builder.setView(dialogView);
+//
+//                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialogInterface, int i) {
+//                                dialogInterface.dismiss();
+//                            }
+//                        });
+//
+//                        txtTitleBookLoan.setText(dataLoanSingle.getBook().getTitle());
+//                        txtUsernameLoans.setText(dataLoanSingle.getBorrower().getUsername());
+//
+//                        if (ReturnStatus.NOT_YET_RETURNED.name().equals(dataLoanSingle.getReturnStatus())) {
+//                            TextViewStyle.textStatusReturnedStyle("NOT YET RETURNED", txtStatusLoans, TextViewStyle.TypeStyle.WARNING, ctx);
+//                        } else if (ReturnStatus.RETURNED.name().equals(dataLoanSingle.getReturnStatus())) {
+//                            TextViewStyle.textStatusReturnedStyle("RETURNED", txtStatusLoans, TextViewStyle.TypeStyle.SUCCESS, ctx);
+//                        } else if (ReturnStatus.RETURNED_LATE.name().equals(dataLoanSingle.getReturnStatus())) {
+//                            TextViewStyle.textStatusReturnedStyle("RETURNED LATE", txtStatusLoans, TextViewStyle.TypeStyle.DANGER, ctx);
+//                        } else {
+//                            TextViewStyle.textStatusReturnedStyle("INVALID", txtStatusLoans, TextViewStyle.TypeStyle.DANGER, ctx);
+//                        }
+//
+//
+//                        txtBorrowedAtLoans.setText(DateFormatterHelpers.formatLongDate(dataLoanSingle.getBorrowedAt()));
+//                        txtDueDateLoans.setText(DateFormatterHelpers.formatLongDate(dataLoanSingle.getDueDate()));
+//                        if (dataLoanSingle.getReturnedAt() == null)
+//                            txtReturnedAtLoans.setText("-");
+//                        else {
+//                            txtReturnedAtLoans.setText(DateFormatterHelpers.formatLongDate(dataLoanSingle.getReturnedAt()));
+//                        }
+//
+//                        AlertDialog alertDialog = builder.create();
+//                        alertDialog.show();
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<ModelAPIResSingleLoans> call, Throwable t) {
+//
+//            }
+//        });
+//    }
     
 }
