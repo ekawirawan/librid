@@ -52,7 +52,7 @@ public class RecyclerViewCustomAdapterMembers extends RecyclerView.Adapter<Recyc
     @Override
     public RecyclerViewCustomAdapterMembers.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View v = inflater.inflate(R.layout.list_data_member, parent, false);
+        View v = inflater.inflate(R.layout.list_data_members, parent, false);
 
         return new ViewHolder(v);
     }

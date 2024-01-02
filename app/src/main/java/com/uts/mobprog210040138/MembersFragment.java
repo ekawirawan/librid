@@ -242,7 +242,7 @@ public class MembersFragment extends Fragment {
                         dataMemberSingle = resultMemberSingle.getData();
 
                         ViewGroup viewGroup = view.findViewById(android.R.id.content);
-                        View dialogView = LayoutInflater.from(ctx).inflate(R.layout.fragment_detail_data_list_members, viewGroup, false);
+                        View dialogView = LayoutInflater.from(ctx).inflate(R.layout.detail_data_list_member, viewGroup, false);
 
                         AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
                         builder.setTitle("Informasi");
