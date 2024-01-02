@@ -1,8 +1,10 @@
 package com.uts.mobprog210040138;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,7 +19,12 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.uts.mobprog210040138.helpers.DateFormatterHelpers;
+import com.uts.mobprog210040138.helpers.TextViewStyle;
+import com.uts.mobprog210040138.models.ModelAPIResLoans;
 import com.uts.mobprog210040138.models.ModelAPIResMember;
+import com.uts.mobprog210040138.models.ModelAPIResSingleLoans;
+import com.uts.mobprog210040138.models.ModelAPIResSingleMember;
 import com.uts.mobprog210040138.models.ModelLoans;
 import com.uts.mobprog210040138.models.ModelMember;
 
@@ -38,7 +45,9 @@ public class MembersFragment extends Fragment {
     APIInterfaceMembers apiService = APIClient.getClient().create(APIInterfaceMembers.class);
     RecyclerView recyclerView1;
     ModelAPIResMember result;
-    List<ModelMember> data1, dataResSearch1;
+    ModelAPIResSingleMember resultMemberSingle;
+    List<ModelMember> dataMember, dataResSearchMember;
+    ModelMember dataMemberSingle;
 
     TextView txtJumlahMember;
     SearchView searchViewMember;
@@ -120,10 +129,17 @@ public class MembersFragment extends Fragment {
 
                     }else {
                         result = response.body();
-                        data1 = result.getData();
-                        adapterMember = new RecyclerViewCustomAdapterMembers(ctx, data1);
+                        dataMember = result.getData();
+                        adapterMember = new RecyclerViewCustomAdapterMembers(ctx, dataMember);
+
+                        adapterMember.setOnItemCLickListener(new RecyclerViewCustomAdapterMembers.ClickListener() {
+                            @Override
+                            public void onItemClick(int position, View view) {
+                                showDetailMember(position);
+                            }
+                        });
                         recyclerView1.setAdapter(adapterMember);
-                        setTotalMember(data1);
+                        setTotalMember(dataMember);
                     }
                 }
             }
@@ -136,29 +152,32 @@ public class MembersFragment extends Fragment {
     }
 
     public void searchMember() {
-        searchViewMember.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                String query = newText.trim().toLowerCase();
-
-                // Cek apakah teks pencarian tidak kosong
-                if (!query.isEmpty()) {
-                    // Lakukan pencarian dan perbarui RecyclerView
-                    performSearch(query);
-                } else {
-                    // Jika teks pencarian kosong, kembalikan ke data awal
-                    resetSearch();
+        try {
+            searchViewMember.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    return false;
                 }
 
-                return true;
-            }
-        });
+                @Override
+                public boolean onQueryTextChange(String newText) {
+                    String query = newText.trim().toLowerCase();
 
+                    // Cek apakah teks pencarian tidak kosong
+                    if (!query.isEmpty()) {
+                        // Lakukan pencarian dan perbarui RecyclerView
+                        performSearch(query);
+                    } else {
+                        // Jika teks pencarian kosong, kembalikan ke data awal
+                        resetSearch();
+                    }
+
+                    return true;
+                }
+            });
+        } catch (Exception e){
+            Log.d("search",e.toString());
+        }
     }
 
 
@@ -175,14 +194,16 @@ public class MembersFragment extends Fragment {
 
                     } else {
                         result = response.body();
-                        dataResSearch1 = result.getData();
-                        Log.d("Search Results", dataResSearch1.toString());
-                        adapterMember = new RecyclerViewCustomAdapterMembers(ctx, dataResSearch1);
+                        dataResSearchMember = result.getData();
+                        Log.d("Search Results", dataResSearchMember.toString());
+                        adapterMember = new RecyclerViewCustomAdapterMembers(ctx, dataResSearchMember);
                         recyclerView1.setAdapter(adapterMember);
-                        setTotalMember(dataResSearch1);
+                        setTotalMember(dataResSearchMember);
+
                     }
                 }
             }
+
             @Override
             public void onFailure(Call<ModelAPIResMember> call, Throwable t) {
 
@@ -192,17 +213,78 @@ public class MembersFragment extends Fragment {
 
     private void resetSearch() {
         // Kembalikan ke data awal atau tampilkan semua data
-        adapterMember = new RecyclerViewCustomAdapterMembers(ctx, data1);
+        adapterMember = new RecyclerViewCustomAdapterMembers(ctx, dataMember);
         recyclerView1.setAdapter(adapterMember);
-        setTotalMember(data1);
+        setTotalMember(dataMember);
     }
 
-    public void setTotalMember(List<ModelMember>data1){
+    public void setTotalMember(List<ModelMember> data1){
         String wordMember = "Member";
         txtJumlahMember = view.findViewById(R.id.txtJumlahMember);
         Integer totalDataReturn = data1.size();
         if(totalDataReturn > 1) {wordMember = "Member";}
         txtJumlahMember.setText(totalDataReturn.toString() + " " + wordMember);
+    }
+
+
+    public void showDetailMember (int position) {
+        Call<ModelAPIResSingleMember> getMemberById = apiService.getMemberById(dataMember.get(position).getMemberId());
+        getMemberById.enqueue(new Callback<ModelAPIResSingleMember>() {
+            @Override
+            public void onResponse(Call<ModelAPIResSingleMember> call, Response<ModelAPIResSingleMember> response) {
+                if (response.code() != 200) {
+
+                } else {
+                    if(response.body() == null) {
+
+                    } else {
+                        resultMemberSingle = response.body();
+                        dataMemberSingle = resultMemberSingle.getData();
+
+                        ViewGroup viewGroup = view.findViewById(android.R.id.content);
+                        View dialogView = LayoutInflater.from(ctx).inflate(R.layout.fragment_detail_data_list_members, viewGroup, false);
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+                        builder.setTitle("Informasi");
+                        builder.setIcon(android.R.drawable.ic_dialog_info);
+                        builder.setCancelable(false);
+
+                        TextView txtUsernameMemberDetail = dialogView.findViewById(R.id.txtUsernameMemberDetail);
+                        TextView txtFullNameMemberDetail = dialogView.findViewById(R.id.txtFullNameMemberDetail);
+                        TextView txtAddressMemberDetail = dialogView.findViewById(R.id.txtAddressMemberDetail);
+                        TextView txtEmailMemberDetail = dialogView.findViewById(R.id.txtEmailMemberDetail);
+                        TextView txtPhoneNumberMemberDetail = dialogView.findViewById(R.id.txtPhoneNumberMemberDetail);
+                        TextView txtMembershipStartMemberDetail = dialogView.findViewById(R.id.txtMembershipStartMemberDetail);
+                        TextView txtMembershipExpiryMemberDetail = dialogView.findViewById(R.id.txtMembershipExpiryMemberDetail);
+
+                        builder.setView(dialogView);
+
+                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.dismiss();
+                            }
+                        });
+
+                        txtUsernameMemberDetail.setText(dataMemberSingle.getUsername());
+                        txtFullNameMemberDetail.setText(dataMemberSingle.getFullName());
+                        txtAddressMemberDetail.setText(dataMemberSingle.getAddress());
+                        txtEmailMemberDetail.setText(dataMemberSingle.getEmail());
+                        txtPhoneNumberMemberDetail.setText(dataMemberSingle.getPhoneNumber());
+                        txtMembershipStartMemberDetail.setText(dataMemberSingle.getMembershipStartDate());
+                        txtMembershipExpiryMemberDetail.setText(dataMemberSingle.getMembershipExpiryDate());
+
+                        AlertDialog alertDialog = builder.create();
+                        alertDialog.show();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ModelAPIResSingleMember> call, Throwable t) {
+
+            }
+        });
     }
 
 }
