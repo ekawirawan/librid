@@ -6,4 +6,8 @@
     </style>
 
     <style name="Theme.UTSMobProgUG214" parent="Base.Theme.UTSMobProgUG214" />
+    <style name="MyDialogAnimation">
+        <item name="android:windowEnterAnimation">@android:anim/fade_in</item>
+        <item name="android:windowExitAnimation">@android:anim/fade_out</item>
+    </style>
 </resources>

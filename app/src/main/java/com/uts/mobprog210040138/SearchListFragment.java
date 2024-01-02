@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -50,8 +51,9 @@ public class SearchListFragment extends Fragment {
     private Context ctx;
     private View view;
     private SearchView searchView;
-    private List<ModelBook> allBooks = new ArrayList<>(); // Declare and initialize the list
-    private List<ModelBook> filteredBooks = new ArrayList<>(); // Declare and initialize the filtered list
+    private List<ModelBook> allBooks = new ArrayList<>();
+    private List<ModelBook> filteredBooks = new ArrayList<>();
+    private ProgressBar progressBar2;
 
     public SearchListFragment() {
         // Required empty public constructor
@@ -163,6 +165,7 @@ public class SearchListFragment extends Fragment {
     ApiInterfaceBook apiServices = APIClient.getClient().create(ApiInterfaceBook.class);
 
     public void searchData() {
+        onDataStart();
         Call<ModelAPIResBook> getDataBooks = apiServices.getAllBook();
 
         getDataBooks.enqueue(new Callback<ModelAPIResBook>() {
@@ -179,6 +182,7 @@ public class SearchListFragment extends Fragment {
                         searchAdapter = new RecycleViewSearchAdapter(ctx, data2);
                         recyclerSearch.setAdapter(searchAdapter);
                         searchAdapter.notifyDataSetChanged();
+                        onDataComplete();
                     }
                 }
             }
@@ -211,5 +215,19 @@ public class SearchListFragment extends Fragment {
 
         // update list buku sesuai yang dicari
         searchAdapter.setFilteredBooks(filteredBooks);
+    }
+
+    public void onDataStart() {
+        // Called when data loading starts
+        if (progressBar2 != null) {
+            progressBar2.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void onDataComplete() {
+        // Called when data loading is complete
+        if (progressBar2 != null) {
+            progressBar2.setVisibility(View.GONE);
+        }
     }
 }
