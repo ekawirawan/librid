@@ -2,11 +2,13 @@ package com.uts.mobprog210040138;
 import com.uts.mobprog210040138.models.ModelAPIResBook;
 import com.uts.mobprog210040138.models.ModelAPIResLoans;
 import com.uts.mobprog210040138.models.ModelAPIResMember;
+import com.uts.mobprog210040138.models.ModelAPIResSingleBook;
 import com.uts.mobprog210040138.models.ModelBook;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Headers;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface ApiInterfaceBook {
@@ -24,4 +26,12 @@ public interface ApiInterfaceBook {
     })
     @GET("/book")
     Call<ModelAPIResBook> getAllBook();
+
+    @Headers({"Content-Type: application/json",
+            "X-API-Key: " + API_KEY
+    })
+    @GET("/book/{id}")
+    Call<ModelAPIResSingleBook> getBookById(
+            @Path("id") String bookId
+    );
 }
