@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -135,7 +136,7 @@ public class LoansFragment extends Fragment  {
                         adapterLoans.setOnItemCLickListener(new RecyclerViewCustomeAdapterLoans.ClickListener() {
                             @Override
                             public void onItemClick(int position, View view) {
-                                showDetailLoans(position);
+                                sendIdToDetailLoan(dataLoan.get(position).getLoanId());
                             }
                         });
 
@@ -154,6 +155,19 @@ public class LoansFragment extends Fragment  {
         });
     }
 
+    public void sendIdToDetailLoan(String loanId) {
+        Bundle bundle = new Bundle();
+        bundle.putString("loanId", loanId);
+
+        DetailLoanFragment fragment = new DetailLoanFragment();
+        fragment.setArguments(bundle);
+        getParentFragmentManager().beginTransaction()
+                .replace(R.id.frame_layout, fragment)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                .addToBackStack(null)
+                .commit();
+    }
+
     public void searchLoan() {
         searchViewLoan.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -165,12 +179,9 @@ public class LoansFragment extends Fragment  {
             public boolean onQueryTextChange(String newText) {
                 String query = newText.trim().toLowerCase();
 
-                // Cek apakah teks pencarian tidak kosong
                 if (!query.isEmpty()) {
-                    // Lakukan pencarian dan perbarui RecyclerView
                     performSearch(query);
                 } else {
-                    // Jika teks pencarian kosong, kembalikan ke data awal
                     resetSearch();
                 }
 
