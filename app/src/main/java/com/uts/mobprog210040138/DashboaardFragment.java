@@ -343,6 +343,8 @@ public class DashboaardFragment extends Fragment {
                         textViewLocation.setText(data8.getBookRackLocation());
 
                         alertDialog = builder.create();
+                        //untuk menamabahkan animasi
+                        alertDialog.getWindow().getAttributes().windowAnimations = R.style.MyDialogAnimation;
                         alertDialog.show();
 
                     }
@@ -370,4 +372,7 @@ public class DashboaardFragment extends Fragment {
             progressBar1.setVisibility(View.GONE);
         }
     }
+
+
+
 }
