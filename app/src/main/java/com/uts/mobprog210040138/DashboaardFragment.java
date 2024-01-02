@@ -1,6 +1,8 @@
 package com.uts.mobprog210040138;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AlertDialog;
@@ -345,6 +347,7 @@ public class DashboaardFragment extends Fragment {
                         alertDialog = builder.create();
                         //untuk menamabahkan animasi
                         alertDialog.getWindow().getAttributes().windowAnimations = R.style.MyDialogAnimation;
+                        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                         alertDialog.show();
 
                     }

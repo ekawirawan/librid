@@ -7,6 +7,7 @@
         android:right="0dp"
         >
         <shape>
+            <corners android:radius="15dp"/>
             <solid android:color="#2A810C"/>
         </shape>
     </item>
@@ -18,6 +19,11 @@
         android:right="0dp"
         android:bottom="0dp">
         <shape>
+            <corners
+                android:topLeftRadius="0dp"
+                android:topRightRadius="0dp"
+                android:bottomLeftRadius="20dp"
+                android:bottomRightRadius="20dp"/>
             <solid android:color="#FFFFFF"/>]
         </shape>
     </item>
