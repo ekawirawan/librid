@@ -105,6 +105,7 @@ public class SearchListFragment extends Fragment {
         recyclerSearch = view.findViewById(R.id.recyclerSearch);
         searchView = view.findViewById(R.id.SeacrhDashboard);
         //Mengatur data yang akan ditampilkan
+        progressBar2 = view.findViewById(R.id.progressBar2);
         LinearLayoutManager manager = new LinearLayoutManager(ctx);
         recyclerSearch.setLayoutManager(manager);
         recyclerSearch.setHasFixedSize(true);
@@ -147,13 +148,16 @@ public class SearchListFragment extends Fragment {
             searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 @Override
                 public boolean onQueryTextSubmit(String s) {
-                    filterBook(s);
                     return false;
                 }
 
                 @Override
                 public boolean onQueryTextChange(String s) {
-                    filterBook(s);
+                    onDataStart1();
+                    if(data2 !=null){
+                        filterBook(s);
+                    }
+                    onDataComplete1();
                     return true;
                 }
             });
@@ -165,7 +169,7 @@ public class SearchListFragment extends Fragment {
     ApiInterfaceBook apiServices = APIClient.getClient().create(ApiInterfaceBook.class);
 
     public void searchData() {
-        onDataStart();
+        onDataStart1();
         Call<ModelAPIResBook> getDataBooks = apiServices.getAllBook();
 
         getDataBooks.enqueue(new Callback<ModelAPIResBook>() {
@@ -182,7 +186,7 @@ public class SearchListFragment extends Fragment {
                         searchAdapter = new RecycleViewSearchAdapter(ctx, data2);
                         recyclerSearch.setAdapter(searchAdapter);
                         searchAdapter.notifyDataSetChanged();
-                        onDataComplete();
+                        onDataComplete1();
                     }
                 }
             }
@@ -217,14 +221,14 @@ public class SearchListFragment extends Fragment {
         searchAdapter.setFilteredBooks(filteredBooks);
     }
 
-    public void onDataStart() {
+    public void onDataStart1() {
         // Called when data loading starts
         if (progressBar2 != null) {
             progressBar2.setVisibility(View.VISIBLE);
         }
     }
 
-    public void onDataComplete() {
+    public void onDataComplete1() {
         // Called when data loading is complete
         if (progressBar2 != null) {
             progressBar2.setVisibility(View.GONE);
