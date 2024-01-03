@@ -55,7 +55,7 @@ public class DashboaardFragment extends Fragment {
     private String mParam2;
 
     //Variabel buku
-    private List<ModelBook> data1;
+    private List<ModelBook> data1, data3;
     private List<ModelLoans> data5;
     private List<ModelMember> data6;
     private ModelBook data8;
@@ -63,7 +63,7 @@ public class DashboaardFragment extends Fragment {
     private RecyclerViewCustomeAdapterBooks customAdapter;
 
     private ModelAPIResSingleBook result4;
-    private ModelAPIResBook result;
+    private ModelAPIResBook result, result5;
     private ModelAPIResLoans result2;
     private ModelAPIResMember result3;
     private Context ctx;
@@ -142,6 +142,7 @@ public class DashboaardFragment extends Fragment {
 
 
         LoadData();
+        loadDataLatest();
         loadDataMembers();
         loadDataLoan();
 
@@ -172,7 +173,6 @@ public class DashboaardFragment extends Fragment {
 
     ApiInterfaceBook apiServices = APIClient.getClient().create(ApiInterfaceBook.class);
     public void LoadData(){
-        onDataStart();
         Call<ModelAPIResBook> getDataBooks = apiServices.getAllBook();
 
         getDataBooks.enqueue(new Callback<ModelAPIResBook>() {
@@ -186,7 +186,38 @@ public class DashboaardFragment extends Fragment {
                     }else{
                         result = response.body();
                         data1 = result.getData();
-                        customAdapter = new RecyclerViewCustomeAdapterBooks(ctx, data1);
+
+                        setTotalBook();
+                    }
+                }
+            }
+
+
+            @Override
+            public void onFailure(Call<ModelAPIResBook> call, Throwable t) {
+
+            }
+        });
+
+    }
+
+    ApiInterfaceBook apiServiceslatest = APIClient.getClient().create(ApiInterfaceBook.class);
+    public void loadDataLatest(){
+        onDataStart();
+        Call<ModelAPIResBook> getDataBooks = apiServiceslatest.getLatestBook();
+
+        getDataBooks.enqueue(new Callback<ModelAPIResBook>() {
+            @Override
+            public void onResponse(Call<ModelAPIResBook> call, Response<ModelAPIResBook> response) {
+                if(response.code() !=200){
+                    Toast.makeText(getContext(), "Code " + response.code(), Toast.LENGTH_LONG).show();
+                }else {
+                    if (response.body() == null){
+
+                    }else{
+                        result5 = response.body();
+                        data3 = result5.getData();
+                        customAdapter = new RecyclerViewCustomeAdapterBooks(ctx, data3);
 
 
                         customAdapter.setOnItemCLickListener(new RecyclerViewCustomeAdapterBooks.ClickListener() {
@@ -198,7 +229,6 @@ public class DashboaardFragment extends Fragment {
 
                         recyclerBook.setAdapter(customAdapter);
                         customAdapter.notifyDataSetChanged();
-                        setTotalBook();
                         onDataComplete();
                     }
                 }
@@ -289,7 +319,7 @@ public class DashboaardFragment extends Fragment {
 
 
     public void loadDialogView(int position) {
-        Call<ModelAPIResSingleBook> getBookById = apiServices.getBookById(data1.get(position).getBookId());
+        Call<ModelAPIResSingleBook> getBookById = apiServices.getBookById(data3.get(position).getBookId());
         getBookById.enqueue(new Callback<ModelAPIResSingleBook>() {
             @Override
             public void onResponse(Call<ModelAPIResSingleBook> call, Response<ModelAPIResSingleBook> response) {
@@ -346,7 +376,7 @@ public class DashboaardFragment extends Fragment {
 
                         alertDialog = builder.create();
                         //untuk menamabahkan animasi
-                        alertDialog.getWindow().getAttributes().windowAnimations = R.style.MyDialogAnimation;
+                        alertDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
                         alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                         alertDialog.show();
 

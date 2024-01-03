@@ -34,4 +34,10 @@ public interface ApiInterfaceBook {
     Call<ModelAPIResSingleBook> getBookById(
             @Path("id") String bookId
     );
+
+    @Headers({"Content-Type: application/json",
+            "X-API-Key: " + API_KEY
+    })
+    @GET("/book/latest")
+    Call<ModelAPIResBook> getLatestBook();
 }
