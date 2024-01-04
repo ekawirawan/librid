@@ -11,7 +11,7 @@
         android:layout_height="match_parent">
 
         <ImageButton
-            android:id="@+id/btnBackLoan"
+            android:id="@+id/btnBackAdd"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginTop="5dp"
@@ -30,7 +30,7 @@
             android:fontFamily="@font/roboto_bold"
             android:text="Detail Loans"
             android:textSize="18dp"
-            app:layout_constraintStart_toEndOf="@+id/btnBackLoan"
+            app:layout_constraintStart_toEndOf="@+id/btnBackAdd"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
@@ -53,7 +53,7 @@
             android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnBackLoan" />
+            app:layout_constraintTop_toBottomOf="@+id/btnBackAdd" />
 
         <TextView
             android:id="@+id/textView17"
@@ -162,7 +162,7 @@
             app:layout_constraintTop_toBottomOf="@+id/textView33" />
 
         <ImageButton
-            android:id="@+id/btnOpenSheetLoan"
+            android:id="@+id/btnMoreAction"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginTop="5dp"

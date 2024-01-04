@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.util.List;
@@ -25,9 +26,19 @@ import retrofit2.Call;
 public class RecyclerViewCustomeAdapterLoans extends RecyclerView.Adapter<RecyclerViewCustomeAdapterLoans.ViewHolder> {
     Context ctx;
     private static ClickListener clickListener;
-    //private OnUpdateStatusButtonClickListener onUpdateStatusButtonClickListener;
+
+    public interface OnMoreButtonClickListener {
+        void onMoreButtonClick(int position);
+    }
+
+    public interface ClickListener {
+        void onItemClick(int position, View view);
+    }
+
+    private OnMoreButtonClickListener onMoreButtonClickListener;
 
     List<ModelLoans> data;
+
 
     public RecyclerViewCustomeAdapterLoans(Context context, List<ModelLoans> dataLoans) {
         ctx = context;
@@ -38,18 +49,13 @@ public class RecyclerViewCustomeAdapterLoans extends RecyclerView.Adapter<Recycl
         RecyclerViewCustomeAdapterLoans.clickListener = clickListener;
     }
 
-    public interface ClickListener {
-        void onItemClick(int position, View view);
+    public void setOnMoreButtonClickListener(OnMoreButtonClickListener onMoreButtonClickListener) {
+        this.onMoreButtonClickListener = onMoreButtonClickListener;
     }
-
-//    public interface OnUpdateStatusButtonClickListener {
-//        void onUpdateStatusButtonClick(int position);
-//    }
-
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView txtTitle, txtUsername, txtBorrowerAt, txtStatusReturned;
-        public Button btnReturn;
+        public ImageButton btnMore;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -57,18 +63,18 @@ public class RecyclerViewCustomeAdapterLoans extends RecyclerView.Adapter<Recycl
             txtUsername = itemView.findViewById(R.id.txtUsernameBorrower);
             txtBorrowerAt = itemView.findViewById(R.id.txtBorrowedAt);
             txtStatusReturned = itemView.findViewById(R.id.txtStatusReturned);
-            //btnReturn = itemView.findViewById(R.id.btnReturn);
+            btnMore = itemView.findViewById(R.id.btnMoreAction);
 
 
-//            btnReturn.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    Log.d("ViewHolder", "Button clicked");
-//                    if (onUpdateStatusButtonClickListener != null) {
-//                        onUpdateStatusButtonClickListener.onUpdateStatusButtonClick(getAdapterPosition());
-//                    }
-//                }
-//            });
+            btnMore.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.d("ViewHolder", "Button clicked");
+                    if (onMoreButtonClickListener != null) {
+                        onMoreButtonClickListener.onMoreButtonClick(getAdapterPosition());
+                    }
+                }
+            });
 
             itemView.setOnClickListener(this);
 
@@ -88,10 +94,6 @@ public class RecyclerViewCustomeAdapterLoans extends RecyclerView.Adapter<Recycl
         return new ViewHolder(v);
     }
 
-//    public void setOnUpdateStatusButtonClickListener(OnUpdateStatusButtonClickListener onUpdateStatusButtonClickListener) {
-//        this.onUpdateStatusButtonClickListener = onUpdateStatusButtonClickListener;
-//    }
-
     @Override
     public void onBindViewHolder(@NonNull RecyclerViewCustomeAdapterLoans.ViewHolder holder, int position) {
         ModelLoans loans = data.get(position);
@@ -110,16 +112,6 @@ public class RecyclerViewCustomeAdapterLoans extends RecyclerView.Adapter<Recycl
             TextViewStyle.textStatusReturnedStyle("INVALID", holder.txtStatusReturned, TextViewStyle.TypeStyle.DANGER, ctx);
         }
     }
-
-
-//    public void hiddenButtonReturn(@NonNull RecyclerViewCustomeAdapterLoans.ViewHolder holder) {
-//        holder.txtStatusReturned.setVisibility(View.VISIBLE);
-//        holder.btnReturn.setVisibility(View.INVISIBLE);
-//        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) holder.btnReturn.getLayoutParams();
-//        params.setMargins(0, 0, 0, 0);
-//        holder.btnReturn.setLayoutParams(params);
-//        holder.btnReturn.setEnabled(false);
-//    }
 
     @Override
     public int getItemCount() { return data.size(); }
