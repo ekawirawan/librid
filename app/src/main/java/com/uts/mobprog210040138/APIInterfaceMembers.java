@@ -54,7 +54,7 @@ public interface APIInterfaceMembers {
             "X-API-Key: " + API_KEY
     })
     @DELETE("/member")
-    Call<ModelAPIResMember> deleteMember(@Query("username") String query);
+    Call<ModelAPIResSingleMember> deleteMember(@Query("username") String query);
 
     //get member by id
     @Headers({"Content-Type: application/json",

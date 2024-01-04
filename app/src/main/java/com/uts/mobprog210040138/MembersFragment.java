@@ -1,7 +1,11 @@
 package com.uts.mobprog210040138;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.icu.text.Transliterator;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AlertDialog;
@@ -12,13 +16,18 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.uts.mobprog210040138.helpers.ConfirmMessage;
 import com.uts.mobprog210040138.helpers.DateFormatterHelpers;
 import com.uts.mobprog210040138.helpers.TextViewStyle;
 import com.uts.mobprog210040138.models.ModelAPIResLoans;
@@ -48,7 +57,6 @@ public class MembersFragment extends Fragment {
     ModelAPIResSingleMember resultMemberSingle;
     List<ModelMember> dataMember, dataResSearchMember;
     ModelMember dataMemberSingle;
-
     TextView txtJumlahMember;
     SearchView searchViewMember;
     RecyclerViewCustomAdapterMembers adapterMember;
@@ -136,6 +144,12 @@ public class MembersFragment extends Fragment {
                             @Override
                             public void onItemClick(int position, View view) {
                                 showDetailMember(position);
+                            }
+                        });
+                        adapterMember.setOnMoreButtonClickListener(new RecyclerViewCustomAdapterMembers.OnMoreButtonClickListener() {
+                            @Override
+                            public void onMoreButtonClick(int position) {
+                                showBottomSheetMember(dataMember.get(position).getMemberId());
                             }
                         });
                         recyclerView1.setAdapter(adapterMember);
@@ -226,6 +240,29 @@ public class MembersFragment extends Fragment {
         txtJumlahMember.setText(totalDataReturn.toString() + " " + wordMember);
     }
 
+    public void deleteMember(String memberId){
+        Call<ModelAPIResSingleMember> deleteMember = apiService.deleteMember(memberId);
+        deleteMember.enqueue(new Callback<ModelAPIResSingleMember>() {
+            @Override
+            public void onResponse(Call<ModelAPIResSingleMember> call, Response<ModelAPIResSingleMember> response) {
+                if (response.code() != 200) {
+
+                } else {
+                    if (response.body() == null) {
+
+                    } else {
+                        loadDataMember();
+                        adapterMember.notifyDataSetChanged();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ModelAPIResSingleMember> call, Throwable t) {
+
+            }
+        });
+    }
 
     public void showDetailMember (int position) {
         Call<ModelAPIResSingleMember> getMemberById = apiService.getMemberById(dataMember.get(position).getMemberId());
@@ -245,7 +282,7 @@ public class MembersFragment extends Fragment {
                         View dialogView = LayoutInflater.from(ctx).inflate(R.layout.detail_data_list_member, viewGroup, false);
 
                         AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
-                        builder.setTitle("Informasi");
+                        builder.setTitle("Details");
                         builder.setIcon(android.R.drawable.ic_dialog_info);
                         builder.setCancelable(false);
 
@@ -285,6 +322,67 @@ public class MembersFragment extends Fragment {
 
             }
         });
+    }
+
+    public void showBottomSheetMember(String memberId) {
+        final Dialog dialog = new Dialog(ctx);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.fragment_bottom_action);
+
+        LinearLayout returnLayout = dialog.findViewById(R.id.layoutReturn);
+        LinearLayout editLayout = dialog.findViewById(R.id.layoutEdit);
+        LinearLayout deleteLayout = dialog.findViewById(R.id.layoutDelete);
+        ImageView cancelButton = dialog.findViewById(R.id.cancelButton);
+        returnLayout.setVisibility(View.GONE);
+
+        editLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                dialog.dismiss();
+                Toast.makeText(ctx,"Create a short is Clicked",Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
+        deleteLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                dialog.dismiss();
+                ConfirmMessage confirmMessage = new ConfirmMessage(ctx);
+                confirmMessage.setMessage("Are you sure to delete this member?");
+                confirmMessage.setTextButtonYes("Yes");
+                confirmMessage.setTextButtonCancle("Cancel");
+                confirmMessage.show();
+
+                confirmMessage.setConfirmationCallback(new ConfirmMessage.ConfirmationCallback() {
+                    @Override
+                    public void onConfirmation(boolean isConfirmed) {
+                        if (isConfirmed) {
+                            Log.d("onConfirm", "Dikonfirmasi Deleted" + memberId.toString());
+                            deleteMember(memberId);
+                        } else {
+                            Log.d("onConfirm", "Dicancle");
+                        }
+                    }
+                });
+
+            }
+        });
+
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        dialog.getWindow().setGravity(Gravity.BOTTOM);
     }
 
 }
