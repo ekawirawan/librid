@@ -1,8 +1,11 @@
 package com.uts.mobprog210040138;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,11 +16,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.uts.mobprog210040138.models.ModelAPIResBook;
+import com.uts.mobprog210040138.models.ModelAPIResSingleBook;
 import com.uts.mobprog210040138.models.ModelBook;
 
 import java.util.ArrayList;
@@ -51,9 +58,13 @@ public class SearchListFragment extends Fragment {
     private Context ctx;
     private View view;
     private SearchView searchView;
+    private ModelBook data9;
+    private ModelAPIResSingleBook result7;
     private List<ModelBook> allBooks = new ArrayList<>();
     private List<ModelBook> filteredBooks = new ArrayList<>();
     private ProgressBar progressBar2;
+    private TextView txtNotfound;
+    private AlertDialog alertDialog1;
 
     public SearchListFragment() {
         // Required empty public constructor
@@ -84,7 +95,7 @@ public class SearchListFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-
+        ctx = getActivity();
 
     }
 
@@ -95,13 +106,13 @@ public class SearchListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_search_list, container, false);
+        view = inflater.inflate(R.layout.fragment_search_list, container, false);
 
-        //ini buat pindah ke dashboard
-
+        //inisialisasi txtnotfound di search xml
+        txtNotfound= view.findViewById(R.id.txtNotFound);
         //inisialisasi imagebutton id
         imageButton = view.findViewById(R.id.imageButton4);
-        //Inisialisasi id recyclerView dashboard
+        //inisialisasi id recyclerView dashboard
         recyclerSearch = view.findViewById(R.id.recyclerSearch);
         searchView = view.findViewById(R.id.SeacrhDashboard);
         //Mengatur data yang akan ditampilkan
@@ -157,6 +168,9 @@ public class SearchListFragment extends Fragment {
                     if(data2 !=null){
                         filterBook(s);
                     }
+                    if(data2 != filteredBooks){
+                        txtNotfound.setText("no book named " + (s));
+                    }
                     onDataComplete1();
                     return true;
                 }
@@ -166,6 +180,7 @@ public class SearchListFragment extends Fragment {
 
     }
 
+    //untuk load data buku di serach
     ApiInterfaceBook apiServices = APIClient.getClient().create(ApiInterfaceBook.class);
 
     public void searchData() {
@@ -184,6 +199,15 @@ public class SearchListFragment extends Fragment {
                         result = response.body();
                         data2 = result.getData();
                         searchAdapter = new RecycleViewSearchAdapter(ctx, data2);
+
+
+                        searchAdapter.setOnItemCLickListener(new RecycleViewSearchAdapter.ClickListener() {
+                            @Override
+                            public void onItemClick(int position, View view) {
+                                loadDialogSearch(position);
+                            }
+                        });
+
                         recyclerSearch.setAdapter(searchAdapter);
                         searchAdapter.notifyDataSetChanged();
                         onDataComplete1();
@@ -198,6 +222,7 @@ public class SearchListFragment extends Fragment {
         });
     }
 
+    //untuk filter buku sesuai text yang diketik
     private void filterBook(String text) {
 
         // Bersihkan list filteredBooks untuk memulai proses filter dari awal
@@ -233,5 +258,78 @@ public class SearchListFragment extends Fragment {
         if (progressBar2 != null) {
             progressBar2.setVisibility(View.GONE);
         }
+    }
+
+    public void loadDialogSearch(int position) {
+
+        Call<ModelAPIResSingleBook> getBookById = apiServices.getBookById(data2.get(position).getBookId());
+        getBookById.enqueue(new Callback<ModelAPIResSingleBook>() {
+            @Override
+            public void onResponse(Call<ModelAPIResSingleBook> call, Response<ModelAPIResSingleBook> response) {
+                if (view == null || getContext() == null) {
+                    return;
+                }
+                if(response.code() !=200){
+                    Toast.makeText(getContext(), "Code " + response.code(), Toast.LENGTH_LONG).show();
+                }else {
+                    if (response.body() == null){
+
+                    }else {
+                        result7 = response.body();
+                        data9 = result7.getData();
+
+                        ViewGroup viewGroup = view.findViewById(android.R.id.content);
+                        View dialogView =
+                                LayoutInflater.from(ctx).
+                                        inflate(R.layout.detail_data_buku, viewGroup, false);
+                        AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+                        builder.setCancelable(false);
+
+                        //inisialisasi komponen
+                        ImageView imageViewBoook = dialogView.findViewById(R.id.imageViewBook);
+                        TextView textViewTitle = dialogView.findViewById(R.id.textViewTitle);
+                        TextView textViewAuthor = dialogView.findViewById(R.id.textViewAuthor);
+                        TextView textViewPublisher = dialogView.findViewById(R.id.textViewPublisher);
+                        TextView textViewPublication = dialogView.findViewById(R.id.textViewPublication);
+                        TextView textViewISBN = dialogView.findViewById(R.id.textViewISBN);
+                        TextView textViewStock = dialogView.findViewById(R.id.textViewStock);
+                        TextView textViewLocation = dialogView.findViewById(R.id.textViewLocation);
+                        ImageButton imageButtonClose = dialogView.findViewById(R.id.imageButtonClose);
+
+                        builder.setView(dialogView);
+                        imageButtonClose.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                alertDialog1.dismiss();
+                            }
+                        });
+
+                        ImageView imageView = imageViewBoook;
+                        Glide.with(ctx)
+                                .load(data9.getImageUrl())
+                                .placeholder(R.drawable.none)
+                                .into(imageViewBoook);
+                        textViewTitle.setText(data9.getTitle());
+                        textViewAuthor.setText(data9.getAuthor());
+                        textViewPublisher.setText(data9.getPublisher());
+                        textViewPublication.setText(data9.getPublicationYear());
+                        textViewISBN.setText(data9.getIsbn());
+                        textViewStock.setText(data9.getStock().toString());
+                        textViewLocation.setText(data9.getBookRackLocation());
+
+                        alertDialog1 = builder.create();
+                        //untuk menamabahkan animasi
+                        alertDialog1.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+                        alertDialog1.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                        alertDialog1.show();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ModelAPIResSingleBook> call, Throwable t) {
+
+            }
+        });
     }
 }
