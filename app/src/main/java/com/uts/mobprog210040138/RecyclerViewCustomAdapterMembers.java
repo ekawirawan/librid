@@ -2,9 +2,11 @@ package com.uts.mobprog210040138;
 
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.util.List;
@@ -16,9 +18,11 @@ import com.uts.mobprog210040138.models.ModelMember;
 
 public class RecyclerViewCustomAdapterMembers extends RecyclerView.Adapter<RecyclerViewCustomAdapterMembers.ViewHolder> {
     Context ctx;
-
+    public interface OnMoreButtonClickListener {
+        void onMoreButtonClick(int position);
+    }
     private static ClickListener clickListener;
-
+    private RecyclerViewCustomAdapterMembers.OnMoreButtonClickListener onMoreButtonClickListener;
     List<ModelMember> data;
 
     public RecyclerViewCustomAdapterMembers(Context context, List<ModelMember> dataMember) {
@@ -34,13 +38,29 @@ public class RecyclerViewCustomAdapterMembers extends RecyclerView.Adapter<Recyc
         void onItemClick(int position, View view);
     }
 
+    public void setOnMoreButtonClickListener(RecyclerViewCustomAdapterMembers.OnMoreButtonClickListener onMoreButtonClickListener) {
+        this.onMoreButtonClickListener = onMoreButtonClickListener;
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView txtUsername, txtFullName;
+        public ImageButton btnMore;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+            btnMore = itemView.findViewById(R.id.btnMoreAction);
             txtUsername = itemView.findViewById(R.id.txtUsername);
             txtFullName = itemView.findViewById(R.id.txtFullName);
+
+            btnMore.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.d("ViewHolder", "Button clicked");
+                    if (onMoreButtonClickListener != null) {
+                        onMoreButtonClickListener.onMoreButtonClick(getAdapterPosition());
+                    }
+                }
+            });
             itemView.setOnClickListener(this);
         }
 
