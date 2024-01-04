@@ -1,10 +1,14 @@
 package com.uts.mobprog210040138;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -13,12 +17,20 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.uts.mobprog210040138.helpers.ActionButton.ActionButtonClickListener;
+import com.uts.mobprog210040138.helpers.ConfirmMessage;
 import com.uts.mobprog210040138.helpers.DateFormatterHelpers;
 import com.uts.mobprog210040138.helpers.TextViewStyle;
 import com.uts.mobprog210040138.models.ModelAPIResLoans;
@@ -34,7 +46,7 @@ import retrofit2.Response;
 //import com.uts.mobprog210040138.RecyclerViewCustomeAdapterLoans.OnUpdateStatusButtonClickListener;
 
 
-public class LoansFragment extends Fragment  {
+public class LoansFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
@@ -65,6 +77,8 @@ public class LoansFragment extends Fragment  {
     RecyclerViewCustomeAdapterLoans adapterLoans;
 
     private View view;
+
+    Button btnAdd;
 
     public LoansFragment() {
         // Required empty public constructor
@@ -98,6 +112,7 @@ public class LoansFragment extends Fragment  {
         recyclerView1 = view.findViewById(R.id.recyclerViewLoans);
 
         searchViewLoan = view.findViewById(R.id.searchViewLoan);
+        btnAdd = view.findViewById(R.id.btnAddDataLoan);
 
         LinearLayoutManager manager = new LinearLayoutManager(ctx);
         recyclerView1.setLayoutManager(manager);
@@ -105,6 +120,18 @@ public class LoansFragment extends Fragment  {
 
         loadDataLoan();
         searchLoan();
+
+        btnAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AddLoansFragment fragment = new AddLoansFragment();
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.frame_layout, fragment)
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
 
         return view;
     }
@@ -126,12 +153,12 @@ public class LoansFragment extends Fragment  {
                         dataLoan = result.getData();
 
                         adapterLoans = new RecyclerViewCustomeAdapterLoans(ctx, dataLoan);
-//                        adapterLoans.setOnUpdateStatusButtonClickListener(new OnUpdateStatusButtonClickListener() {
-//                            @Override
-//                            public void onUpdateStatusButtonClick(int position) {
-//                                updateReturnStatusLoans(position);
-//                            }
-//                        });
+                        adapterLoans.setOnMoreButtonClickListener(new RecyclerViewCustomeAdapterLoans.OnMoreButtonClickListener() {
+                            @Override
+                            public void onMoreButtonClick(int position) {
+                                showBottomSheetLoan(dataLoan.get(position).getLoanId(), dataLoan.get(position).getReturnStatus());
+                            }
+                        });
 
                         adapterLoans.setOnItemCLickListener(new RecyclerViewCustomeAdapterLoans.ClickListener() {
                             @Override
@@ -236,8 +263,8 @@ public class LoansFragment extends Fragment  {
         txtTotalLoans.setText(totalDataReturn.toString() + " " + wordLoan);
     }
 
-    public void updateReturnStatusLoans (int position) {
-        Call<ModelAPIResSingleLoans> updateReturnStatus = apiService.updateReturnStatusLoan(dataLoan.get(position).getLoanId());
+    public void updateReturnStatusLoans (String loanId) {
+        Call<ModelAPIResSingleLoans> updateReturnStatus = apiService.updateReturnStatusLoan(loanId);
         updateReturnStatus.enqueue(new Callback<ModelAPIResSingleLoans>() {
             @Override
             public void onResponse(Call<ModelAPIResSingleLoans> call, Response<ModelAPIResSingleLoans> response) {
@@ -252,6 +279,30 @@ public class LoansFragment extends Fragment  {
                     }
                 }
 
+            }
+
+            @Override
+            public void onFailure(Call<ModelAPIResSingleLoans> call, Throwable t) {
+
+            }
+        });
+    }
+
+    public void deleteLoans(String loanId) {
+        Call<ModelAPIResSingleLoans> deleteLoans = apiService.deleteLoan(loanId);
+        deleteLoans.enqueue(new Callback<ModelAPIResSingleLoans>() {
+            @Override
+            public void onResponse(Call<ModelAPIResSingleLoans> call, Response<ModelAPIResSingleLoans> response) {
+                if (response.code() != 200) {
+
+                } else {
+                    if (response.body() == null) {
+
+                    } else {
+                        loadDataLoan();
+                        adapterLoans.notifyDataSetChanged();
+                    }
+                }
             }
 
             @Override
@@ -333,5 +384,94 @@ public class LoansFragment extends Fragment  {
 //            }
 //        });
 //    }
+
+    public void showBottomSheetLoan(String loanId, String returnStatus) {
+        final Dialog dialog = new Dialog(ctx);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.fragment_bottom_action);
+
+        LinearLayout returnLayout = dialog.findViewById(R.id.layoutReturn);
+        LinearLayout editLayout = dialog.findViewById(R.id.layoutEdit);
+        LinearLayout deleteLayout = dialog.findViewById(R.id.layoutDelete);
+        ImageView cancelButton = dialog.findViewById(R.id.cancelButton);
+
+        if(!("NOT_YET_RETURNED".equals(returnStatus))) {
+            returnLayout.setVisibility(View.GONE);
+        }
+
+        returnLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                ConfirmMessage confirmMessage = new ConfirmMessage(ctx);
+                confirmMessage.setMessage("Are you sure to return this loans?");
+                confirmMessage.setTextButtonYes("Yes");
+                confirmMessage.setTextButtonCancle("Cancel");
+                confirmMessage.show();
+
+                confirmMessage.setConfirmationCallback(new ConfirmMessage.ConfirmationCallback() {
+                    @Override
+                    public void onConfirmation(boolean isConfirmed) {
+                        if (isConfirmed) {
+                            Log.d("onConfirm", "Dikonfirmasi updateStatus" + loanId.toString());
+                            updateReturnStatusLoans(loanId);
+                        } else {
+                            Log.d("onConfirm", "Dicancle");
+                        }
+                    }
+                });
+
+            }
+        });
+
+        editLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                dialog.dismiss();
+                Toast.makeText(ctx,"Create a short is Clicked",Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
+        deleteLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                dialog.dismiss();
+                ConfirmMessage confirmMessage = new ConfirmMessage(ctx);
+                confirmMessage.setMessage("Are you sure to delete this loans?");
+                confirmMessage.setTextButtonYes("Yes");
+                confirmMessage.setTextButtonCancle("Cancel");
+                confirmMessage.show();
+
+                confirmMessage.setConfirmationCallback(new ConfirmMessage.ConfirmationCallback() {
+                    @Override
+                    public void onConfirmation(boolean isConfirmed) {
+                        if (isConfirmed) {
+                            Log.d("onConfirm", "Dikonfirmasi Deleted" + loanId.toString());
+                            deleteLoans(loanId);
+                        } else {
+                            Log.d("onConfirm", "Dicancle");
+                        }
+                    }
+                });
+
+            }
+        });
+
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        dialog.getWindow().setGravity(Gravity.BOTTOM);
+    }
     
 }
