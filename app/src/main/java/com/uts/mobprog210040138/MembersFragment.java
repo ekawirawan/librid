@@ -23,6 +23,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -61,6 +62,7 @@ public class MembersFragment extends Fragment {
     SearchView searchViewMember;
     RecyclerViewCustomAdapterMembers adapterMember;
     private View view;
+    private ProgressBar progressBarMember;
 
 
     // TODO: Rename parameter arguments, choose names that match
@@ -109,6 +111,7 @@ public class MembersFragment extends Fragment {
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_members, container, false);
         recyclerView1 = view.findViewById(R.id.recyclerViewMember);
+        progressBarMember = view.findViewById(R.id.progressBarMember);
 
         searchViewMember = view.findViewById(R.id.searchViewMember);
 
@@ -125,6 +128,7 @@ public class MembersFragment extends Fragment {
 
 
     public void loadDataMember() {
+        onDataStart();
         Call<ModelAPIResMember> getAllMember = apiService.getAllMember();
         getAllMember.enqueue(new Callback<ModelAPIResMember>() {
             @Override
@@ -154,6 +158,7 @@ public class MembersFragment extends Fragment {
                         });
                         recyclerView1.setAdapter(adapterMember);
                         setTotalMember(dataMember);
+                        onDataComplete();
                     }
                 }
             }
@@ -383,6 +388,20 @@ public class MembersFragment extends Fragment {
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
         dialog.getWindow().setGravity(Gravity.BOTTOM);
+    }
+
+    public void onDataStart() {
+        // Called when data loading starts
+        if (progressBarMember != null) {
+            progressBarMember.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void onDataComplete() {
+        // Called when data loading is complete
+        if (progressBarMember != null) {
+            progressBarMember.setVisibility(View.GONE);
+        }
     }
 
 }
