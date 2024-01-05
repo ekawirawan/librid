@@ -38,14 +38,14 @@ public interface APIInterfaceMembers {
             "X-API-Key: " + API_KEY
     })
     @POST("/member")
-    Call<ModelAPIResMember> createMember(@Body ModelMember reqBody);
+    Call<ModelAPIResSingleMember> createMember(@Body ModelMember reqBody);
 
     //update a member
     @Headers({"Content-Type: application/json",
             "X-API-Key: " + API_KEY
     })
     @PUT("/member")
-    Call<ModelAPIResMember> updateMember(
+    Call<ModelAPIResSingleMember> updateMember(
             @Query("member_id") String query,
             @Body ModelMember reqBody);
 
