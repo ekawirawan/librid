@@ -18,7 +18,7 @@ public class ConfirmMessage {
     private Context ctx;
     private TextView message;
     private Button buttonYes;
-    private Button buttonCancle;
+    private Button buttonCancel;
     private Dialog dialog;
 
     public interface ConfirmationCallback {
@@ -37,7 +37,7 @@ public class ConfirmMessage {
 
         message = dialog.findViewById(R.id.txtConfirm);
         buttonYes = dialog.findViewById(R.id.btnConfirmYes);
-        buttonCancle = dialog.findViewById(R.id.btnConfirmCancle);
+        buttonCancel = dialog.findViewById(R.id.btnConfirmCancel);
     }
 
     public void show () {
@@ -51,7 +51,7 @@ public class ConfirmMessage {
             }
         });
 
-        buttonCancle.setOnClickListener(new View.OnClickListener() {
+        buttonCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (confirmationCallback != null) {
@@ -78,7 +78,7 @@ public class ConfirmMessage {
     }
 
     public void setTextButtonCancle(String newText) {
-        this.buttonCancle.setText(newText);
+        this.buttonCancel.setText(newText);
     }
 
     public void setConfirmationCallback(ConfirmationCallback callback) {
