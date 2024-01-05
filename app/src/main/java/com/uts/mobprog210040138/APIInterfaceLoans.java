@@ -3,6 +3,7 @@ package com.uts.mobprog210040138;
 
 import com.uts.mobprog210040138.models.ModelAPIResLoans;
 import com.uts.mobprog210040138.models.ModelAPIResSingleLoans;
+import com.uts.mobprog210040138.models.ModelLoanReq;
 import com.uts.mobprog210040138.models.ModelLoans;
 
 import retrofit2.Call;
@@ -33,12 +34,12 @@ public interface APIInterfaceLoans {
     @GET("/loan/search")
     Call<ModelAPIResLoans> getAllLoanByUsername(@Query("usernameBorrower") String query);
 
-    //create a loan
+    //add a loan
     @Headers({"Content-Type: application/json",
             "X-API-Key: " + API_KEY
     })
     @POST("/loan")
-    Call<ModelAPIResLoans> createLoan(@Body ModelLoans reqBody);
+    Call<ModelAPIResSingleLoans> addLoan(@Body ModelLoanReq reqBody);
 
     //get book by id
     @Headers({"Content-Type: application/json",
@@ -56,7 +57,7 @@ public interface APIInterfaceLoans {
     @PUT("/loan/{id}")
     Call<ModelAPIResSingleLoans> updateLoan(
             @Path("id") String loanId,
-            @Body ModelLoans reqBody
+            @Body ModelLoanReq reqBody
     );
 
     //delete loan

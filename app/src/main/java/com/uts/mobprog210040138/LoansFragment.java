@@ -11,6 +11,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -32,10 +33,12 @@ import android.widget.Toast;
 import com.uts.mobprog210040138.helpers.ActionButton.ActionButtonClickListener;
 import com.uts.mobprog210040138.helpers.ConfirmMessage;
 import com.uts.mobprog210040138.helpers.DateFormatterHelpers;
+import com.uts.mobprog210040138.helpers.NotificationHelpers;
 import com.uts.mobprog210040138.helpers.TextViewStyle;
 import com.uts.mobprog210040138.models.ModelAPIResLoans;
 import com.uts.mobprog210040138.models.ModelAPIResSingleLoans;
 import com.uts.mobprog210040138.models.ModelLoans;
+import com.uts.mobprog210040138.models.SharedDataViewModel;
 
 import java.util.List;
 import java.util.Locale;
@@ -79,6 +82,7 @@ public class LoansFragment extends Fragment {
     private View view;
 
     Button btnAdd;
+    SharedDataViewModel sharedDataViewModel;
 
     public LoansFragment() {
         // Required empty public constructor
@@ -102,6 +106,7 @@ public class LoansFragment extends Fragment {
         }
 
         ctx = getActivity();
+        sharedDataViewModel = new ViewModelProvider(requireActivity()).get(SharedDataViewModel.class);
     }
 
     @Override
@@ -156,7 +161,7 @@ public class LoansFragment extends Fragment {
                         adapterLoans.setOnMoreButtonClickListener(new RecyclerViewCustomeAdapterLoans.OnMoreButtonClickListener() {
                             @Override
                             public void onMoreButtonClick(int position) {
-                                showBottomSheetLoan(dataLoan.get(position).getLoanId(), dataLoan.get(position).getReturnStatus());
+                                showBottomSheetLoan(dataLoan.get(position).getLoanId(), dataLoan.get(position).getReturnStatus(), dataLoan.get(position));
                             }
                         });
 
@@ -269,13 +274,17 @@ public class LoansFragment extends Fragment {
             @Override
             public void onResponse(Call<ModelAPIResSingleLoans> call, Response<ModelAPIResSingleLoans> response) {
                 if (response.code() != 200) {
-
+                    NotificationHelpers notification = new NotificationHelpers(ctx, "Opss..Something went wrong", NotificationHelpers.Status.DANGER);
+                    notification.show();
                 } else {
                     if (response.body() == null) {
-
+                        NotificationHelpers notification = new NotificationHelpers(ctx, "Opss..Something went wrong", NotificationHelpers.Status.DANGER);
+                        notification.show();
                     } else {
                         loadDataLoan();
                         adapterLoans.notifyDataSetChanged();
+                        NotificationHelpers notification = new NotificationHelpers(ctx, "Return status updated successfully", NotificationHelpers.Status.SUCCESS);
+                        notification.show();
                     }
                 }
 
@@ -283,7 +292,8 @@ public class LoansFragment extends Fragment {
 
             @Override
             public void onFailure(Call<ModelAPIResSingleLoans> call, Throwable t) {
-
+                NotificationHelpers notification = new NotificationHelpers(ctx, "Opss..Something went wrong", NotificationHelpers.Status.DANGER);
+                notification.show();
             }
         });
     }
@@ -294,20 +304,25 @@ public class LoansFragment extends Fragment {
             @Override
             public void onResponse(Call<ModelAPIResSingleLoans> call, Response<ModelAPIResSingleLoans> response) {
                 if (response.code() != 200) {
-
+                    NotificationHelpers notification = new NotificationHelpers(ctx, "Opss..Something went wrong", NotificationHelpers.Status.DANGER);
+                    notification.show();
                 } else {
                     if (response.body() == null) {
-
+                        NotificationHelpers notification = new NotificationHelpers(ctx, "Opss..Something went wrong", NotificationHelpers.Status.DANGER);
+                        notification.show();
                     } else {
                         loadDataLoan();
                         adapterLoans.notifyDataSetChanged();
+                        NotificationHelpers notification = new NotificationHelpers(ctx, "Loans deleted successfully", NotificationHelpers.Status.SUCCESS);
+                        notification.show();
                     }
                 }
             }
 
             @Override
             public void onFailure(Call<ModelAPIResSingleLoans> call, Throwable t) {
-
+                NotificationHelpers notification = new NotificationHelpers(ctx, "Opss..Something went wrong", NotificationHelpers.Status.DANGER);
+                notification.show();
             }
         });
     }
@@ -385,7 +400,7 @@ public class LoansFragment extends Fragment {
 //        });
 //    }
 
-    public void showBottomSheetLoan(String loanId, String returnStatus) {
+    public void showBottomSheetLoan(String loanId, String returnStatus, ModelLoans loanData) {
         final Dialog dialog = new Dialog(ctx);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.fragment_bottom_action);
@@ -427,9 +442,20 @@ public class LoansFragment extends Fragment {
         editLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 dialog.dismiss();
-                Toast.makeText(ctx,"Create a short is Clicked",Toast.LENGTH_SHORT).show();
+                sharedDataViewModel.setIdLoan(loanData.getLoanId());
+                sharedDataViewModel.setBookId(loanData.getBook().getBookId());
+                sharedDataViewModel.setTitle(loanData.getBook().getTitle());
+                sharedDataViewModel.setMemberId(loanData.getBorrower().getMemberId());
+                sharedDataViewModel.setUsername(loanData.getBorrower().getUsername());
+
+                AddLoansFragment fragment = new AddLoansFragment();
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.frame_layout, fragment)
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                        .addToBackStack(null)
+                        .commit();
+//                Toast.makeText(ctx,"Create a short is Clicked",Toast.LENGTH_SHORT).show();
 
             }
         });
@@ -449,7 +475,6 @@ public class LoansFragment extends Fragment {
                     @Override
                     public void onConfirmation(boolean isConfirmed) {
                         if (isConfirmed) {
-                            Log.d("onConfirm", "Dikonfirmasi Deleted" + loanId.toString());
                             deleteLoans(loanId);
                         } else {
                             Log.d("onConfirm", "Dicancle");
