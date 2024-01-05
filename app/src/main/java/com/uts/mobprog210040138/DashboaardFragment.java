@@ -3,6 +3,8 @@ package com.uts.mobprog210040138;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AlertDialog;
@@ -12,6 +14,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -73,7 +76,7 @@ public class DashboaardFragment extends Fragment {
     private AlertDialog alertDialog;
     private ProgressBar progressBar1;
 
-
+    private TextView statusTextView;
 
 
 
@@ -123,6 +126,9 @@ public class DashboaardFragment extends Fragment {
 
         // Temukan ImageButton dari layout
         imageButton = view.findViewById(R.id.imageButton3);
+
+        statusTextView = view.findViewById(R.id.statusTextView);
+
         progressBar1 = view.findViewById(R.id.progressBar1);
 
         customAdapter = new RecyclerViewCustomeAdapterBooks(ctx, data1);
@@ -138,13 +144,8 @@ public class DashboaardFragment extends Fragment {
         recyclerBook.setLayoutManager(manager);
         recyclerBook.setHasFixedSize(true);
 
-        //
-
-
-        LoadData();
-        loadDataLatest();
-        loadDataMembers();
-        loadDataLoan();
+        //untuk load semua data yang ada
+       loadSemuaData();
 
         // Tambahkan event listener untuk ImageButton
         imageButton.setOnClickListener(new View.OnClickListener() {
@@ -155,6 +156,8 @@ public class DashboaardFragment extends Fragment {
             }
 
         });
+
+
 
 
 
@@ -407,5 +410,56 @@ public class DashboaardFragment extends Fragment {
     }
 
 
+
+
+    public void checkInternetConnection () {
+
+        if (!isAdded() || requireActivity() == null) {
+            // Fragment not attached to an activity
+            return;
+        }
+
+        ConnectivityManager connectivityManager = (ConnectivityManager) requireActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        // Mendapatkan info koneksi saat ini
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+
+        // Memeriksa apakah ada koneksi internet
+        if (networkInfo != null && networkInfo.isConnectedOrConnecting()) {
+
+            // Jika ada koneksi, sembunyikan pesan kesalahan dan tampilkan konten
+            statusTextView.setVisibility(View.GONE);
+
+        } else {
+            onDataStart();
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    statusTextView.setVisibility(View.VISIBLE);
+                    statusTextView.setText("No internet connection");
+                    onDataComplete();
+                }
+            }, 5000);
+
+
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    statusTextView.setVisibility(View.GONE);
+                    loadSemuaData();
+                }
+            }, 15000);
+
+        }
+
+    }
+
+    private void  loadSemuaData() {
+        LoadData();
+        loadDataLatest();
+        loadDataMembers();
+        loadDataLoan();
+        checkInternetConnection();
+    }
 
 }
