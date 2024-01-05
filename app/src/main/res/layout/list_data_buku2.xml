@@ -29,7 +29,7 @@
 
         <TextView
             android:id="@+id/txtTitle3"
-            android:layout_width="0dp"
+            android:layout_width="225dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="9dp"
             android:layout_marginTop="5dp"
@@ -42,10 +42,12 @@
 
         <TextView
             android:id="@+id/txtAuthor3"
-            android:layout_width="wrap_content"
+            android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="9dp"
             android:layout_marginTop="6dp"
+            android:fontFamily="@font/roboto"
+            android:maxLines="1"
             android:text="TextView"
             app:layout_constraintStart_toEndOf="@+id/imageView4"
             app:layout_constraintTop_toBottomOf="@+id/txtTitle3" />
@@ -56,6 +58,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="9dp"
             android:layout_marginTop="6dp"
+            android:fontFamily="@font/roboto"
             android:text="TextView"
             app:layout_constraintStart_toEndOf="@+id/imageView4"
             app:layout_constraintTop_toBottomOf="@+id/txtAuthor3" />
