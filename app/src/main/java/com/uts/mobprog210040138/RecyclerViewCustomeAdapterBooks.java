@@ -20,8 +20,6 @@ import com.uts.mobprog210040138.models.ModelBook;
 public class RecyclerViewCustomeAdapterBooks extends RecyclerView.Adapter<RecyclerViewCustomeAdapterBooks.ViewHolder> {
     Context ctx;
 
-
-
     public static ClickListener clickListener;
 
     List<ModelBook> data;
@@ -76,11 +74,10 @@ public class RecyclerViewCustomeAdapterBooks extends RecyclerView.Adapter<Recycl
         holder.txtAuthor3.setText(book.getAuthor());
         holder.txtStock3.setText("Stock: " + book.getStock().toString());
         ImageView imageView = holder.imageView4;
-        if (ctx != null && !((AppCompatActivity) ctx).isFinishing()) {
-            Glide.with(ctx)
-                    .load(R.drawable.none)
-                    .into(holder.imageView4);
-        }
+        Glide.with(ctx)
+                .load(book.getImageUrl())
+                .placeholder(R.drawable.none)
+                .into(imageView);
     }
     @Override
     public int getItemCount() {

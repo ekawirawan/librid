@@ -67,11 +67,10 @@ public class RecycleViewSearchAdapter extends RecyclerView.Adapter<RecycleViewSe
         ModelBook book = data.get(position);
         holder.txtTitle4.setText(book.getTitle());
         ImageView imageView = holder.imageView7;
-        if (ctx != null && !((AppCompatActivity) ctx).isFinishing()) {
-            Glide.with(ctx)
-                    .load(R.drawable.none)
-                    .into(holder.imageView7);
-        }
+        Glide.with(ctx)
+                .load(book.getImageUrl())
+                .placeholder(R.drawable.none)
+                .into(imageView);
     }
     @Override
     public int getItemCount() {
