@@ -33,7 +33,7 @@ public class ConfirmMessage {
 
         dialog = new Dialog(ctx);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.fragment_bottom_confirm);
+        dialog.setContentView(R.layout.bottom_confirmation);
 
         message = dialog.findViewById(R.id.txtConfirm);
         buttonYes = dialog.findViewById(R.id.btnConfirmYes);

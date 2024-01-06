@@ -17,7 +17,7 @@ public interface ApiInterfaceBook {
     @Headers({"Content-Type: application/json",
             "X-API-Key: " + API_KEY
     })
-    @GET("/book")
+    @GET("/book/search")
     Call<ModelAPIResBook> getBookByTitle(@Query("title") String title);
 
     //get all loans

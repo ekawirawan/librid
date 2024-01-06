@@ -32,7 +32,7 @@ public class ActionButton {
 
         dialog = new Dialog(ctx);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.fragment_bottom_action);
+        dialog.setContentView(R.layout.bottom_action);
 
         returnLayout = dialog.findViewById(R.id.layoutReturn);
         editLayout = dialog.findViewById(R.id.layoutEdit);
