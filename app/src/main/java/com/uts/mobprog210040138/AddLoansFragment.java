@@ -28,17 +28,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class AddLoansFragment extends Fragment {
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    //
     Context ctx;
     ModelAPIResSingleLoans result;
     ModelLoans dataLoan;
@@ -55,31 +44,19 @@ public class AddLoansFragment extends Fragment {
     private SharedDataViewModel sharedDataViewModel;
 
 
-
     public AddLoansFragment() {
-        // Required empty public constructor
+
     }
 
-    // TODO: Rename and change types and number of parameters
-    public static AddLoansFragment newInstance(String param1, String param2) {
+    public static AddLoansFragment newInstance() {
         AddLoansFragment fragment = new AddLoansFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-
         ctx = getActivity();
-
         sharedDataViewModel = new ViewModelProvider(requireActivity()).get(SharedDataViewModel.class);
     }
 
@@ -123,7 +100,6 @@ public class AddLoansFragment extends Fragment {
 
         //retrive choose member
         if (sharedDataViewModel.getMemberId() != null && sharedDataViewModel.getUsername() != null) {
-            Log.d("Helo", "SUCCESSSSSSSSSSSSSSSSSSSSSSSSSSS");
             String memberId = sharedDataViewModel.getMemberId();
             String username = sharedDataViewModel.getUsername();
 
@@ -173,7 +149,7 @@ public class AddLoansFragment extends Fragment {
     }
 
     public void backMenu() {
-        if(txtIdBook.getText() != null || txtIdMemberChoose.getText() != null) {
+        if(txtIdBook.getText() != "" || txtIdMemberChoose.getText() != "") {
             ConfirmMessage confirmMessage = new ConfirmMessage(ctx);
             confirmMessage.setMessage("Do you want discard your changes?");
             confirmMessage.show();
@@ -182,18 +158,19 @@ public class AddLoansFragment extends Fragment {
                 @Override
                 public void onConfirmation(boolean isConfirmed) {
                     if (isConfirmed) {
-                        getParentFragmentManager().popBackStack();
+                        LoansFragment fragment = new LoansFragment();
+                        getParentFragmentManager().beginTransaction()
+                                .replace(R.id.frame_layout, fragment)
+                                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                                .addToBackStack(null)
+                                .commit();
                         resetSharedDataViewModel();
-                    } else {
-
                     }
                 }
             });
         } else {
             getParentFragmentManager().popBackStack();
         }
-
-
     }
 
     public void resetSharedDataViewModel() {

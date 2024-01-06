@@ -14,9 +14,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import com.uts.mobprog210040138.helpers.NotificationHelpers;
+import com.uts.mobprog210040138.helpers.ProgressBarHelpers;
 import com.uts.mobprog210040138.models.ModelAPIResMember;
 import com.uts.mobprog210040138.models.ModelMember;
 import com.uts.mobprog210040138.models.SharedDataViewModel;
@@ -28,18 +31,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class SearchMemberFragment extends Fragment {
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    //
-
     Context ctx;
 
     APIInterfaceMembers apiService = APIClient.getClient().create(APIInterfaceMembers.class);
@@ -58,27 +49,23 @@ public class SearchMemberFragment extends Fragment {
     ImageButton btnBack;
     private SharedDataViewModel sharedDataViewModel;
 
+    ProgressBar progressBarSearchMember;
+
+    ProgressBarHelpers progressBarHelpers;
+
     public SearchMemberFragment() {
-        // Required empty public constructor
+
     }
 
-    // TODO: Rename and change types and number of parameters
-    public static SearchMemberFragment newInstance(String param1, String param2) {
+    public static SearchMemberFragment newInstance() {
         SearchMemberFragment fragment = new SearchMemberFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
+
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
 
         ctx = getActivity();
         sharedDataViewModel = new ViewModelProvider(requireActivity()).get(SharedDataViewModel.class);
@@ -87,12 +74,14 @@ public class SearchMemberFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         view =  inflater.inflate(R.layout.fragment_search_member, container, false);
         searchViewMember = view.findViewById(R.id.searchViewBookChoose);
 
         recyclerViewMember = view.findViewById(R.id.recyclerViewBookChoose);
         btnBack = view.findViewById(R.id.btnBackChooseMember);
+        progressBarSearchMember = view.findViewById(R.id.progressBarSearchMember);
+
+        progressBarHelpers = new ProgressBarHelpers(progressBarSearchMember);
 
         LinearLayoutManager manager = new LinearLayoutManager(ctx);
         recyclerViewMember.setLayoutManager(manager);
@@ -111,16 +100,20 @@ public class SearchMemberFragment extends Fragment {
 
 
     public void loadDataMember() {
+        progressBarHelpers.show();
         Call<ModelAPIResMember> getAllMember = apiService.getAllMember();
         getAllMember.enqueue(new Callback<ModelAPIResMember>() {
             @Override
             public void onResponse(Call<ModelAPIResMember> call, Response<ModelAPIResMember> response) {
                 if (response.code() !=200){
-                    Toast.makeText(getContext(), "code" + response.code(),
-                            Toast.LENGTH_LONG).show();
+                    NotificationHelpers notification = new NotificationHelpers(ctx, "Opss..Failed to load member data", NotificationHelpers.Status.DANGER);
+                    notification.show();
+                    progressBarHelpers.hide();
                 }else{
                     if (response.body() == null){
-
+                        NotificationHelpers notification = new NotificationHelpers(ctx, "Opss..Failed to load member data", NotificationHelpers.Status.DANGER);
+                        notification.show();
+                        progressBarHelpers.hide();
                     }else {
                         result = response.body();
                         dataMember = result.getData();
@@ -129,22 +122,25 @@ public class SearchMemberFragment extends Fragment {
                         adapterMember.setOnItemCLickListener(new RecyclerViewCustomAdapterMembers.ClickListener() {
                             @Override
                             public void onItemClick(int position, View view) {
-                                sendBundle(dataMember.get(position).getMemberId(), dataMember.get(position).getUsername());
+                                sendSharedDataViewModel(dataMember.get(position).getMemberId(), dataMember.get(position).getUsername());
                             }
                         });
                         recyclerViewMember.setAdapter(adapterMember);
+                        progressBarHelpers.hide();
                     }
                 }
             }
 
             @Override
             public void onFailure(Call<ModelAPIResMember> call, Throwable t) {
-
+                NotificationHelpers notification = new NotificationHelpers(ctx, "Opss..Failed to load member data", NotificationHelpers.Status.DANGER);
+                notification.show();
+                progressBarHelpers.hide();
             }
         });
     }
 
-    public void sendBundle(String memberId, String username) {
+    public void sendSharedDataViewModel(String memberId, String username) {
         sharedDataViewModel.setMemberId(memberId);
         sharedDataViewModel.setUsername(username);
 
@@ -184,42 +180,42 @@ public class SearchMemberFragment extends Fragment {
     }
 
     public void performSearch(String query) {
-        Log.d("Query", query);
+        progressBarHelpers.show();
         Call<ModelAPIResMember> getAllLoanByUsername = apiService.getAllMemberByUsername(query.trim().toLowerCase());
         getAllLoanByUsername.enqueue(new Callback<ModelAPIResMember>() {
             @Override
             public void onResponse(Call<ModelAPIResMember> call, Response<ModelAPIResMember> response) {
                 if (response.code() != 200) {
-
+                    progressBarHelpers.hide();
                 } else {
                     if (response.body() == null) {
-
+                        progressBarHelpers.hide();
                     } else {
                         result = response.body();
                         dataResSearch = result.getData();
-                        Log.d("Search Results", dataResSearch.toString());
                         adapterMember = new RecyclerViewCustomAdapterMembers(ctx, dataResSearch);
-                        recyclerViewMember.setAdapter(adapterMember);
 
                         adapterMember.setOnItemCLickListener(new RecyclerViewCustomAdapterMembers.ClickListener() {
                             @Override
                             public void onItemClick(int position, View view) {
-                                sendBundle(dataResSearch.get(position).getMemberId(), dataResSearch.get(position).getUsername());
+                                sendSharedDataViewModel(dataResSearch.get(position).getMemberId(), dataResSearch.get(position).getUsername());
                             }
                         });
+
+                        recyclerViewMember.setAdapter(adapterMember);
+                        progressBarHelpers.hide();
                     }
                 }
             }
 
             @Override
             public void onFailure(Call<ModelAPIResMember> call, Throwable t) {
-
+                progressBarHelpers.hide();
             }
         });
     }
 
     private void resetSearch() {
-        // Kembalikan ke data awal atau tampilkan semua data
         adapterMember = new RecyclerViewCustomAdapterMembers(ctx, dataMember);
         recyclerViewMember.setAdapter(adapterMember);
     }

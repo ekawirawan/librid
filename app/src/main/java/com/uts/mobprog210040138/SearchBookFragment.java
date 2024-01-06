@@ -14,9 +14,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import com.uts.mobprog210040138.helpers.NotificationHelpers;
+import com.uts.mobprog210040138.helpers.ProgressBarHelpers;
 import com.uts.mobprog210040138.models.ModelAPIResBook;
 import com.uts.mobprog210040138.models.ModelAPIResMember;
 import com.uts.mobprog210040138.models.ModelBook;
@@ -30,16 +33,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class SearchBookFragment extends Fragment {
-
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    ///
-
     Context ctx;
 
     ApiInterfaceBook apiService = APIClient.getClient().create(ApiInterfaceBook.class);
@@ -56,41 +49,41 @@ public class SearchBookFragment extends Fragment {
     RecyclerViewCustomeAdapterBooks adapterBook;
 
     ImageButton btnBack;
+
+    ProgressBar progressBarSearchBook;
     private SharedDataViewModel sharedDataViewModel;
 
+    ProgressBarHelpers progressBarHelpers;
+
     public SearchBookFragment() {
-        // Required empty public constructor
+
     }
 
-    public static SearchBookFragment newInstance(String param1, String param2) {
+    public static SearchBookFragment newInstance() {
         SearchBookFragment fragment = new SearchBookFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
+
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-        sharedDataViewModel = new ViewModelProvider(requireActivity()).get(SharedDataViewModel.class);
+
         ctx = getActivity();
+        sharedDataViewModel = new ViewModelProvider(requireActivity()).get(SharedDataViewModel.class);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_search_book, container, false);
         searchViewBook = view.findViewById(R.id.searchViewBookChoose);
 
         recyclerViewBook = view.findViewById(R.id.recyclerViewBookChoose);
         btnBack = view.findViewById(R.id.btnBackChooseMember);
+        progressBarSearchBook = view.findViewById(R.id.progressBarSearchBook);
+
+        progressBarHelpers = new ProgressBarHelpers(progressBarSearchBook);
 
         LinearLayoutManager manager = new LinearLayoutManager(ctx);
         recyclerViewBook.setLayoutManager(manager);
@@ -109,15 +102,20 @@ public class SearchBookFragment extends Fragment {
 
 
     public void loadDataBook() {
+        progressBarHelpers.show();
         Call<ModelAPIResBook> getAllBook = apiService.getAllBook();
         getAllBook.enqueue(new Callback<ModelAPIResBook>() {
             @Override
             public void onResponse(Call<ModelAPIResBook> call, Response<ModelAPIResBook> response) {
-                if (response.code() !=200){
-
+                if (response.code() != 200){
+                    NotificationHelpers notification = new NotificationHelpers(ctx, "Opss..Failed to load book data", NotificationHelpers.Status.DANGER);
+                    notification.show();
+                    progressBarHelpers.hide();
                 }else{
                     if (response.body() == null){
-
+                        NotificationHelpers notification = new NotificationHelpers(ctx, "Opss..Failed to load book data", NotificationHelpers.Status.DANGER);
+                        notification.show();
+                        progressBarHelpers.hide();
                     }else {
                         result = response.body();
                         dataBook = result.getData();
@@ -126,23 +124,26 @@ public class SearchBookFragment extends Fragment {
                         adapterBook.setOnItemCLickListener(new RecyclerViewCustomeAdapterBooks.ClickListener() {
                             @Override
                             public void onItemClick(int position, View view) {
-                                sendBundle(dataBook.get(position).getBookId(), dataBook.get(position).getTitle());
+                                setSharedDataViewModel(dataBook.get(position).getBookId(), dataBook.get(position).getTitle());
                             }
                         });
 
                         recyclerViewBook.setAdapter(adapterBook);
+                        progressBarHelpers.hide();
                     }
                 }
             }
 
             @Override
             public void onFailure(Call<ModelAPIResBook> call, Throwable t) {
-
+                NotificationHelpers notification = new NotificationHelpers(ctx, "Opss..Failed to load book data", NotificationHelpers.Status.DANGER);
+                notification.show();
+                progressBarHelpers.hide();
             }
         });
     }
 
-    public void sendBundle(String bookId, String title) {
+    public void setSharedDataViewModel(String bookId, String title) {
         sharedDataViewModel.setBookId(bookId);
         sharedDataViewModel.setTitle(title);
 
@@ -153,7 +154,6 @@ public class SearchBookFragment extends Fragment {
                 .addToBackStack(null)
                 .commit();
     }
-
 
 
     public void searchBook() {
@@ -180,42 +180,42 @@ public class SearchBookFragment extends Fragment {
     }
 
     public void performSearch(String query) {
-        Log.d("Query", query);
+        progressBarHelpers.show();
         Call<ModelAPIResBook> getAllBookByTitle = apiService.getBookByTitle(query.trim().toLowerCase());
         getAllBookByTitle.enqueue(new Callback<ModelAPIResBook>() {
             @Override
             public void onResponse(Call<ModelAPIResBook> call, Response<ModelAPIResBook> response) {
                 if (response.code() != 200) {
-
+                    progressBarHelpers.hide();
                 } else {
                     if (response.body() == null) {
-
+                        progressBarHelpers.hide();
                     } else {
                         result = response.body();
                         dataResSearch = result.getData();
-                        Log.d("Search Results", dataResSearch.toString());
                         adapterBook = new RecyclerViewCustomeAdapterBooks(ctx, dataResSearch);
-                        recyclerViewBook.setAdapter(adapterBook);
 
                         adapterBook.setOnItemCLickListener(new RecyclerViewCustomeAdapterBooks.ClickListener() {
                             @Override
                             public void onItemClick(int position, View view) {
-                                sendBundle(dataResSearch.get(position).getBookId(), dataResSearch.get(position).getTitle());
+                                setSharedDataViewModel(dataResSearch.get(position).getBookId(), dataResSearch.get(position).getTitle());
                             }
                         });
+
+                        recyclerViewBook.setAdapter(adapterBook);
+                        progressBarHelpers.hide();
                     }
                 }
             }
 
             @Override
             public void onFailure(Call<ModelAPIResBook> call, Throwable t) {
-
+                progressBarHelpers.hide();
             }
         });
     }
 
     private void resetSearch() {
-        // Kembalikan ke data awal atau tampilkan semua data
         adapterBook = new RecyclerViewCustomeAdapterBooks(ctx, dataBook);
         recyclerViewBook.setAdapter(adapterBook);
     }
