@@ -3,6 +3,8 @@ package com.uts.mobprog210040138;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AlertDialog;
@@ -10,6 +12,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -63,8 +66,11 @@ public class SearchListFragment extends Fragment {
     private List<ModelBook> allBooks = new ArrayList<>();
     private List<ModelBook> filteredBooks = new ArrayList<>();
     private ProgressBar progressBar2;
-    private TextView txtNotfound;
+    private TextView txtNotfound, statusTextview2;
     private AlertDialog alertDialog1;
+    private ImageButton imageButtonRetry2;
+    private ImageView imageNoInternet2;
+
 
     public SearchListFragment() {
         // Required empty public constructor
@@ -112,6 +118,11 @@ public class SearchListFragment extends Fragment {
         txtNotfound= view.findViewById(R.id.txtNotFound);
         //inisialisasi imagebutton id
         imageButton = view.findViewById(R.id.imageButton4);
+
+        statusTextview2 = view.findViewById(R.id.statusTextView2);
+        imageButtonRetry2 = view.findViewById(R.id.imageButtonRetry2);
+        imageNoInternet2 = view.findViewById(R.id.imageNoInternet2);
+
         //inisialisasi id recyclerView dashboard
         recyclerSearch = view.findViewById(R.id.recyclerSearch);
         searchView = view.findViewById(R.id.SeacrhDashboard);
@@ -120,6 +131,9 @@ public class SearchListFragment extends Fragment {
         LinearLayoutManager manager = new LinearLayoutManager(ctx);
         recyclerSearch.setLayoutManager(manager);
         recyclerSearch.setHasFixedSize(true);
+
+        loadSemua();
+
         // Tambahkan event listener untuk ImageButton
         imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -130,12 +144,15 @@ public class SearchListFragment extends Fragment {
             }
         });
 
+        imageButtonRetry2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Trigger data reload when the retry button is clicked
+                loadSemua();
+            }
+        });
 
-        // Call searchBook() to set up search functionality
-        searchBook();
 
-        // Call searchData() to populate RecyclerView with data
-        searchData();
 
         return view;
     }
@@ -331,5 +348,57 @@ public class SearchListFragment extends Fragment {
 
             }
         });
+    }
+
+    public void checkInternetConnectionSearch () {
+
+        if (!isAdded() || requireActivity() == null) {
+
+            return;
+        }
+
+        ConnectivityManager connectivityManager = (ConnectivityManager) requireActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        // Mendapatkan info koneksi saat ini
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+
+        // Memeriksa apakah ada koneksi internet
+        if (networkInfo != null && networkInfo.isConnectedOrConnecting()) {
+
+            // Jika ada koneksi, sembunyikan pesan kesalahan dan tampilkan konten
+            statusTextview2.setVisibility(View.GONE);
+            imageNoInternet2.setVisibility(View.GONE);
+            imageButtonRetry2.setVisibility(View.GONE);
+            txtNotfound.setVisibility(View.GONE);
+
+        } else {
+
+            onDataStart1();
+
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (isAdded() && requireActivity() != null) {
+
+                        statusTextview2.setVisibility(View.VISIBLE);
+                        statusTextview2.setText("No internet connection");
+                        imageNoInternet2.setVisibility(View.VISIBLE);
+                        imageButtonRetry2.setVisibility(View.VISIBLE);
+                        onDataComplete1();
+                    }
+                }
+            }, 5000);
+
+        }
+
+    }
+    private void loadSemua () {
+        searchBook();
+        searchData();
+        checkInternetConnectionSearch();
+        statusTextview2.setVisibility(View.GONE);
+        imageNoInternet2.setVisibility(View.GONE);
+        imageButtonRetry2.setVisibility(View.GONE);
+        txtNotfound.setVisibility(View.GONE);
     }
 }

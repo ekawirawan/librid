@@ -77,6 +77,8 @@ public class DashboaardFragment extends Fragment {
     private ProgressBar progressBar1;
 
     private TextView statusTextView;
+    private ImageButton imageButtonRetry;
+    private ImageView imageNoInternet;
 
 
 
@@ -126,6 +128,9 @@ public class DashboaardFragment extends Fragment {
 
         // Temukan ImageButton dari layout
         imageButton = view.findViewById(R.id.imageButton3);
+        imageButtonRetry = view.findViewById(R.id.imageButtonRetry);
+
+        imageNoInternet = view.findViewById(R.id.imageNoInternet);
 
         statusTextView = view.findViewById(R.id.statusTextView);
 
@@ -145,6 +150,7 @@ public class DashboaardFragment extends Fragment {
         recyclerBook.setHasFixedSize(true);
 
         //untuk load semua data yang ada
+
        loadSemuaData();
 
         // Tambahkan event listener untuk ImageButton
@@ -157,8 +163,13 @@ public class DashboaardFragment extends Fragment {
 
         });
 
+        imageButtonRetry.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
-
+                loadSemuaData();
+            }
+        });
 
 
         return view;
@@ -415,7 +426,7 @@ public class DashboaardFragment extends Fragment {
     public void checkInternetConnection () {
 
         if (!isAdded() || requireActivity() == null) {
-            // Fragment not attached to an activity
+
             return;
         }
 
@@ -429,26 +440,25 @@ public class DashboaardFragment extends Fragment {
 
             // Jika ada koneksi, sembunyikan pesan kesalahan dan tampilkan konten
             statusTextView.setVisibility(View.GONE);
+            imageNoInternet.setVisibility(View.GONE);
+            imageButtonRetry.setVisibility(View.GONE);
 
         } else {
+
             onDataStart();
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    statusTextView.setVisibility(View.VISIBLE);
-                    statusTextView.setText("No internet connection");
-                    onDataComplete();
+                    if (isAdded() && requireActivity() != null) {
+
+                        statusTextView.setVisibility(View.VISIBLE);
+                        statusTextView.setText("No internet connection");
+                        imageNoInternet.setVisibility(View.VISIBLE);
+                        imageButtonRetry.setVisibility(View.VISIBLE);
+                        onDataComplete();
+                    }
                 }
             }, 5000);
-
-
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    statusTextView.setVisibility(View.GONE);
-                    loadSemuaData();
-                }
-            }, 15000);
 
         }
 
@@ -460,6 +470,9 @@ public class DashboaardFragment extends Fragment {
         loadDataMembers();
         loadDataLoan();
         checkInternetConnection();
+        statusTextView.setVisibility(View.GONE);
+        imageNoInternet.setVisibility(View.GONE);
+        imageButtonRetry.setVisibility(View.GONE);
     }
 
 }
