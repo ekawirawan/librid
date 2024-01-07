@@ -10,6 +10,7 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -21,6 +22,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -61,6 +63,7 @@ public class MembersFragment extends Fragment {
     TextView txtJumlahMember;
     SearchView searchViewMember;
     RecyclerViewCustomAdapterMembers adapterMember;
+    Button btnAddMember;
     private View view;
     private ProgressBar progressBarMember;
 
@@ -112,6 +115,7 @@ public class MembersFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_members, container, false);
         recyclerView1 = view.findViewById(R.id.recyclerViewMember);
         progressBarMember = view.findViewById(R.id.progressBarMember);
+        btnAddMember = view.findViewById(R.id.btnAddMember);
 
         searchViewMember = view.findViewById(R.id.searchViewMember);
 
@@ -121,6 +125,18 @@ public class MembersFragment extends Fragment {
 
         loadDataMember();
         searchMember();
+
+        btnAddMember.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AddMemberFragment fragment = new AddMemberFragment();
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.frame_layout, fragment)
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
 
         return view;
         //return inflater.inflate(R.layout.fragment_members, container, false);
@@ -345,7 +361,18 @@ public class MembersFragment extends Fragment {
             public void onClick(View v) {
 
                 dialog.dismiss();
-                Toast.makeText(ctx,"Create a short is Clicked",Toast.LENGTH_SHORT).show();
+                Bundle bundle = new Bundle();
+                bundle.putString("memberId",memberId);
+
+
+                AddMemberFragment fragment = new AddMemberFragment();
+                fragment.setArguments(bundle);
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.frame_layout, fragment)
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                        .addToBackStack(null)
+                        .commit();
+              //  Toast.makeText(ctx,"Create a short is Clicked",Toast.LENGTH_SHORT).show();
 
             }
         });
