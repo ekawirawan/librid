@@ -185,9 +185,13 @@ public class SearchListFragment extends Fragment {
                     if(data2 !=null){
                         filterBook(s);
                     }
-                    if(data2 != filteredBooks){
+                    if(filteredBooks.size() == 0){
+                        txtNotfound.setVisibility(View.VISIBLE);
                         txtNotfound.setText("no book named " + (s));
+                    } else{
+                        txtNotfound.setVisibility(View.GONE);
                     }
+
                     onDataComplete1();
                     return true;
                 }
@@ -259,8 +263,9 @@ public class SearchListFragment extends Fragment {
             }
         }
 
+        searchAdapter = new RecycleViewSearchAdapter(ctx, filteredBooks);
+        recyclerSearch.setAdapter(searchAdapter);
         // update list buku sesuai yang dicari
-        searchAdapter.setFilteredBooks(filteredBooks);
     }
 
     public void onDataStart1() {
@@ -369,7 +374,7 @@ public class SearchListFragment extends Fragment {
             statusTextview2.setVisibility(View.GONE);
             imageNoInternet2.setVisibility(View.GONE);
             imageButtonRetry2.setVisibility(View.GONE);
-            txtNotfound.setVisibility(View.GONE);
+
 
         } else {
 
@@ -384,6 +389,7 @@ public class SearchListFragment extends Fragment {
                         statusTextview2.setText("No internet connection");
                         imageNoInternet2.setVisibility(View.VISIBLE);
                         imageButtonRetry2.setVisibility(View.VISIBLE);
+                        txtNotfound.setVisibility(View.GONE);
                         onDataComplete1();
                     }
                 }
@@ -399,6 +405,5 @@ public class SearchListFragment extends Fragment {
         statusTextview2.setVisibility(View.GONE);
         imageNoInternet2.setVisibility(View.GONE);
         imageButtonRetry2.setVisibility(View.GONE);
-        txtNotfound.setVisibility(View.GONE);
     }
 }
