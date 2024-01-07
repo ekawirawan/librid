@@ -5,6 +5,7 @@ import com.uts.mobprog210040138.models.ModelAPIResSingleLoans;
 import com.uts.mobprog210040138.models.ModelAPIResSingleMember;
 import com.uts.mobprog210040138.models.ModelLoans;
 import  com.uts.mobprog210040138.models.ModelMember;
+import com.uts.mobprog210040138.models.ModelMemberReq;
 
 import retrofit2.Call;
 import retrofit2.http.DELETE;
@@ -38,23 +39,23 @@ public interface APIInterfaceMembers {
             "X-API-Key: " + API_KEY
     })
     @POST("/member")
-    Call<ModelAPIResSingleMember> createMember(@Body ModelMember reqBody);
+    Call<ModelAPIResSingleMember> createMember(@Body ModelMemberReq reqBody);
 
     //update a member
     @Headers({"Content-Type: application/json",
             "X-API-Key: " + API_KEY
     })
-    @PUT("/member")
+    @PUT("/member/{id}")
     Call<ModelAPIResSingleMember> updateMember(
-            @Query("member_id") String query,
-            @Body ModelMember reqBody);
+            @Path("id") String memberId,
+            @Body ModelMemberReq reqBody);
 
     //delete member by name
     @Headers({"Content-Type: application/json",
             "X-API-Key: " + API_KEY
     })
-    @DELETE("/member")
-    Call<ModelAPIResSingleMember> deleteMember(@Query("username") String query);
+    @DELETE("/member/{id}")
+    Call<ModelAPIResSingleMember> deleteMember(@Path("id") String memberId);
 
     //get member by id
     @Headers({"Content-Type: application/json",
