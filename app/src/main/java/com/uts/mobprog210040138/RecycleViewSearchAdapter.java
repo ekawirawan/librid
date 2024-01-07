@@ -77,9 +77,9 @@ public class RecycleViewSearchAdapter extends RecyclerView.Adapter<RecycleViewSe
         return data.size();
     }
 
-    public void setFilteredBooks(List<ModelBook> filteredBooks) {
-        this.data = filteredBooks;
-        notifyDataSetChanged();
-    }
+//    public void setFilteredBooks(List<ModelBook> filteredBooks) {
+//        this.data = filteredBooks;
+//        notifyDataSetChanged();
+//    }
 
 }
