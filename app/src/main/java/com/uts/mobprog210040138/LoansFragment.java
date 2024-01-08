@@ -33,6 +33,7 @@ import com.uts.mobprog210040138.models.ModelAPIResSingleLoans;
 import com.uts.mobprog210040138.models.ModelLoans;
 import com.uts.mobprog210040138.models.SharedDataViewModel;
 
+import java.util.Collections;
 import java.util.List;
 
 import retrofit2.Call;
@@ -55,7 +56,7 @@ public class LoansFragment extends Fragment {
 
     ModelLoans dataLoanSingle;
 
-    TextView txtTotalLoans;
+    TextView txtTotalLoans, txtInfoLoans;
     SearchView searchViewLoan;
 
     public RecyclerView recyclerView1;
@@ -96,6 +97,7 @@ public class LoansFragment extends Fragment {
         searchViewLoan = view.findViewById(R.id.searchViewLoan);
         btnAdd = view.findViewById(R.id.btnAddDataLoan);
         progressBarLoans = view.findViewById(R.id.progressBarLoans);
+        txtInfoLoans = view.findViewById(R.id.txtInfoLoans);
 
         progressBarHelpers = new ProgressBarHelpers(progressBarLoans);
 
@@ -122,7 +124,10 @@ public class LoansFragment extends Fragment {
     }
 
     public void loadDataLoan () {
-        progressBarHelpers.show();
+        if (result == null) {
+            progressBarHelpers.show();
+        }
+
         Call<ModelAPIResLoans> getAllLoan = apiService.getAllLoan();
         getAllLoan.enqueue(new Callback<ModelAPIResLoans>() {
             @Override
@@ -132,11 +137,12 @@ public class LoansFragment extends Fragment {
                     notification.show();
                     progressBarHelpers.hide();
                 } else {
-                    if (response.body() == null) {
-                        NotificationHelpers notification = new NotificationHelpers(ctx, "Opss..Failed to load loans data", NotificationHelpers.Status.DANGER);
-                        notification.show();
+                    if (response.body().getData().size() == 0) {
+                        txtInfoLoans.setText("Opss..Loans data is empty");
+                        txtInfoLoans.setVisibility(View.VISIBLE);
                         progressBarHelpers.hide();
                     } else {
+                        txtInfoLoans.setVisibility(View.INVISIBLE);
                         result = response.body();
                         dataLoan = result.getData();
 
@@ -172,16 +178,13 @@ public class LoansFragment extends Fragment {
     }
 
     public void sendIdToDetailLoan(String loanId) {
-        Bundle bundle = new Bundle();
-        bundle.putString("loanId", loanId);
+        DetailLoanFragment fragment = new DetailLoanFragment().newInstance(loanId);
 
-        DetailLoanFragment fragment = new DetailLoanFragment();
-        fragment.setArguments(bundle);
-        getParentFragmentManager().beginTransaction()
-                .replace(R.id.frame_layout, fragment)
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                .addToBackStack(null)
-                .commit();
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.frame_layout, fragment)
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                    .addToBackStack(null)
+                    .commit();
     }
 
     public void searchLoan() {
@@ -216,9 +219,16 @@ public class LoansFragment extends Fragment {
                 if (response.code() != 200) {
                     progressBarHelpers.hide();
                 } else {
-                    if (response.body() == null) {
+                    if (response.body().getData().size() == 0) {
+                        txtInfoLoans.setText("Opss..Loans data not found");
+                        txtInfoLoans.setVisibility(View.VISIBLE);
                         progressBarHelpers.hide();
+                        adapterLoans = new RecyclerViewCustomeAdapterLoans(ctx, Collections.emptyList());
+                        recyclerView1.setAdapter(adapterLoans);
+                        txtTotalLoans.setVisibility(View.INVISIBLE);
                     } else {
+                        txtInfoLoans.setVisibility(View.INVISIBLE);
+                        txtTotalLoans.setVisibility(View.VISIBLE);
                         result = response.body();
                         dataResSearch = result.getData();
                         adapterLoans = new RecyclerViewCustomeAdapterLoans(ctx, dataResSearch);
@@ -255,6 +265,8 @@ public class LoansFragment extends Fragment {
         adapterLoans = new RecyclerViewCustomeAdapterLoans(ctx, dataLoan);
         recyclerView1.setAdapter(adapterLoans);
         setTotalLoan(dataLoan);
+        txtInfoLoans.setVisibility(View.INVISIBLE);
+        txtTotalLoans.setVisibility(View.VISIBLE);
     }
 
     public void setTotalLoan(List<ModelLoans> data) {

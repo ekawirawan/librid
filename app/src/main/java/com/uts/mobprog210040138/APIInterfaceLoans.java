@@ -32,7 +32,7 @@ public interface APIInterfaceLoans {
             "X-API-Key: " + API_KEY
     })
     @GET("/loan/search")
-    Call<ModelAPIResLoans> getAllLoanByUsername(@Query("usernameBorrower") String query);
+    Call<ModelAPIResLoans> getAllLoanByUsername(@Query("query") String query);
 
     //add a loan
     @Headers({"Content-Type: application/json",

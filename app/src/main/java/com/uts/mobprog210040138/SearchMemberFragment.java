@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.uts.mobprog210040138.helpers.NotificationHelpers;
@@ -24,6 +25,9 @@ import com.uts.mobprog210040138.models.ModelAPIResMember;
 import com.uts.mobprog210040138.models.ModelMember;
 import com.uts.mobprog210040138.models.SharedDataViewModel;
 
+import org.w3c.dom.Text;
+
+import java.util.Collections;
 import java.util.List;
 
 import retrofit2.Call;
@@ -53,6 +57,8 @@ public class SearchMemberFragment extends Fragment {
 
     ProgressBarHelpers progressBarHelpers;
 
+    TextView txtInfoMember;
+
     public SearchMemberFragment() {
 
     }
@@ -80,6 +86,7 @@ public class SearchMemberFragment extends Fragment {
         recyclerViewMember = view.findViewById(R.id.recyclerViewBookChoose);
         btnBack = view.findViewById(R.id.btnBackChooseMember);
         progressBarSearchMember = view.findViewById(R.id.progressBarSearchMember);
+        txtInfoMember = view.findViewById(R.id.txtInfoChooseMember);
 
         progressBarHelpers = new ProgressBarHelpers(progressBarSearchMember);
 
@@ -110,11 +117,12 @@ public class SearchMemberFragment extends Fragment {
                     notification.show();
                     progressBarHelpers.hide();
                 }else{
-                    if (response.body() == null){
-                        NotificationHelpers notification = new NotificationHelpers(ctx, "Opss..Failed to load member data", NotificationHelpers.Status.DANGER);
-                        notification.show();
+                    if (response.body().getData().size() == 0){
+                        txtInfoMember.setText("Opss..Member is empty");
+                        txtInfoMember.setVisibility(View.VISIBLE);
                         progressBarHelpers.hide();
                     }else {
+                        txtInfoMember.setVisibility(View.INVISIBLE);
                         result = response.body();
                         dataMember = result.getData();
                         adapterMember = new RecyclerViewCustomAdapterMembers(ctx, dataMember);
@@ -186,11 +194,18 @@ public class SearchMemberFragment extends Fragment {
             @Override
             public void onResponse(Call<ModelAPIResMember> call, Response<ModelAPIResMember> response) {
                 if (response.code() != 200) {
+                    NotificationHelpers notification = new NotificationHelpers(ctx, "Opss..Something went wrong", NotificationHelpers.Status.DANGER);
+                    notification.show();
                     progressBarHelpers.hide();
                 } else {
-                    if (response.body() == null) {
+                    if (response.body().getData().size() == 0) {
+                        txtInfoMember.setText("Opss..Member not found");
+                        txtInfoMember.setVisibility(View.VISIBLE);
                         progressBarHelpers.hide();
+                        adapterMember = new RecyclerViewCustomAdapterMembers(ctx, Collections.emptyList());
+                        recyclerViewMember.setAdapter(adapterMember);
                     } else {
+                        txtInfoMember.setVisibility(View.INVISIBLE);
                         result = response.body();
                         dataResSearch = result.getData();
                         adapterMember = new RecyclerViewCustomAdapterMembers(ctx, dataResSearch);
@@ -210,6 +225,8 @@ public class SearchMemberFragment extends Fragment {
 
             @Override
             public void onFailure(Call<ModelAPIResMember> call, Throwable t) {
+                NotificationHelpers notification = new NotificationHelpers(ctx, "Opss..Something went wrong", NotificationHelpers.Status.DANGER);
+                notification.show();
                 progressBarHelpers.hide();
             }
         });
@@ -218,6 +235,7 @@ public class SearchMemberFragment extends Fragment {
     private void resetSearch() {
         adapterMember = new RecyclerViewCustomAdapterMembers(ctx, dataMember);
         recyclerViewMember.setAdapter(adapterMember);
+        txtInfoMember.setVisibility(View.INVISIBLE);
     }
 
 }

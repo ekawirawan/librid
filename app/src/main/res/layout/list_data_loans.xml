@@ -8,14 +8,15 @@
     android:visibility="visible">
 
     <TextView
-        android:id="@+id/txtTitleBook"
+        android:id="@+id/txtIdLoans"
         android:layout_width="340dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
         android:layout_marginTop="15dp"
         android:ellipsize="end"
         android:fontFamily="@font/roboto_bold"
         android:maxLines="1"
-        android:text="Title"
+        android:text="ID"
         android:textAlignment="textStart"
         android:textSize="16sp"
         android:textStyle="bold"
@@ -45,8 +46,8 @@
         android:textAlignment="textStart"
         android:textColor="#86000000"
         android:textSize="12sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtTitleBook" />
+        app:layout_constraintStart_toStartOf="@+id/txtIdLoans"
+        app:layout_constraintTop_toBottomOf="@+id/txtIdLoans" />
 
 
     <TextView
@@ -78,7 +79,7 @@
         android:textSize="12sp"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/txtUsernameBorrower"
         app:layout_constraintTop_toBottomOf="@+id/txtUsernameBorrower"
         app:layout_constraintVertical_bias="0.023" />
 </androidx.constraintlayout.widget.ConstraintLayout>

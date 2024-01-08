@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.uts.mobprog210040138.helpers.NotificationHelpers;
@@ -26,6 +27,7 @@ import com.uts.mobprog210040138.models.ModelBook;
 import com.uts.mobprog210040138.models.ModelMember;
 import com.uts.mobprog210040138.models.SharedDataViewModel;
 
+import java.util.Collections;
 import java.util.List;
 
 import retrofit2.Call;
@@ -55,6 +57,8 @@ public class SearchBookFragment extends Fragment {
 
     ProgressBarHelpers progressBarHelpers;
 
+    TextView txtInfoBook;
+
     public SearchBookFragment() {
 
     }
@@ -82,6 +86,7 @@ public class SearchBookFragment extends Fragment {
         recyclerViewBook = view.findViewById(R.id.recyclerViewBookChoose);
         btnBack = view.findViewById(R.id.btnBackChooseMember);
         progressBarSearchBook = view.findViewById(R.id.progressBarSearchBook);
+        txtInfoBook = view.findViewById(R.id.txtInfoChooseBook);
 
         progressBarHelpers = new ProgressBarHelpers(progressBarSearchBook);
 
@@ -112,11 +117,12 @@ public class SearchBookFragment extends Fragment {
                     notification.show();
                     progressBarHelpers.hide();
                 }else{
-                    if (response.body() == null){
-                        NotificationHelpers notification = new NotificationHelpers(ctx, "Opss..Failed to load book data", NotificationHelpers.Status.DANGER);
-                        notification.show();
+                    if (response.body().getData().size() == 0){
+                        txtInfoBook.setText("Opss..Book data is empty");
+                        txtInfoBook.setVisibility(View.VISIBLE);
                         progressBarHelpers.hide();
                     }else {
+                        txtInfoBook.setVisibility(View.INVISIBLE);
                         result = response.body();
                         dataBook = result.getData();
                         adapterBook = new RecyclerViewCustomeAdapterBooks(ctx, dataBook);
@@ -188,9 +194,14 @@ public class SearchBookFragment extends Fragment {
                 if (response.code() != 200) {
                     progressBarHelpers.hide();
                 } else {
-                    if (response.body() == null) {
+                    if (response.body().getData().size() == 0) {
+                        txtInfoBook.setText("Opss..Book data not found");
+                        txtInfoBook.setVisibility(View.VISIBLE);
                         progressBarHelpers.hide();
+                        adapterBook = new RecyclerViewCustomeAdapterBooks(ctx, Collections.emptyList());
+                        recyclerViewBook.setAdapter(adapterBook);
                     } else {
+                        txtInfoBook.setVisibility(View.INVISIBLE);
                         result = response.body();
                         dataResSearch = result.getData();
                         adapterBook = new RecyclerViewCustomeAdapterBooks(ctx, dataResSearch);
@@ -216,6 +227,7 @@ public class SearchBookFragment extends Fragment {
     }
 
     private void resetSearch() {
+        txtInfoBook.setVisibility(View.INVISIBLE);
         adapterBook = new RecyclerViewCustomeAdapterBooks(ctx, dataBook);
         recyclerViewBook.setAdapter(adapterBook);
     }
