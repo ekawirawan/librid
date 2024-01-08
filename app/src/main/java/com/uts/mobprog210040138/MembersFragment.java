@@ -348,7 +348,7 @@ public class MembersFragment extends Fragment {
     public void showBottomSheetMember(String memberId) {
         final Dialog dialog = new Dialog(ctx);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.fragment_bottom_action);
+        dialog.setContentView(R.layout.bottom_action);
 
         LinearLayout returnLayout = dialog.findViewById(R.id.layoutReturn);
         LinearLayout editLayout = dialog.findViewById(R.id.layoutEdit);
