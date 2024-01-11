@@ -23,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -40,6 +41,7 @@ import com.uts.mobprog210040138.models.ModelAPIResSingleMember;
 import com.uts.mobprog210040138.models.ModelLoans;
 import com.uts.mobprog210040138.models.ModelMember;
 
+import java.security.PrivateKey;
 import java.util.List;
 
 import retrofit2.Call;
@@ -66,6 +68,8 @@ public class MembersFragment extends Fragment {
     Button btnAddMember;
     private View view;
     private ProgressBar progressBarMember;
+    private AlertDialog alertDialog;
+    private ImageButton imageButtonCloseMember;
 
 
     // TODO: Rename parameter arguments, choose names that match
@@ -303,8 +307,6 @@ public class MembersFragment extends Fragment {
                         View dialogView = LayoutInflater.from(ctx).inflate(R.layout.detail_data_list_member, viewGroup, false);
 
                         AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
-                        builder.setTitle("Details");
-                        builder.setIcon(android.R.drawable.ic_dialog_info);
                         builder.setCancelable(false);
 
                         TextView txtUsernameMemberDetail = dialogView.findViewById(R.id.txtUsernameMemberDetail);
@@ -314,13 +316,14 @@ public class MembersFragment extends Fragment {
                         TextView txtPhoneNumberMemberDetail = dialogView.findViewById(R.id.txtPhoneNumberMemberDetail);
                         TextView txtMembershipStartMemberDetail = dialogView.findViewById(R.id.txtMembershipStartMemberDetail);
                         TextView txtMembershipExpiryMemberDetail = dialogView.findViewById(R.id.txtMembershipExpiryMemberDetail);
+                        ImageButton imageButtonCloseMember = dialogView.findViewById(R.id.imageButtonClosMember);
 
                         builder.setView(dialogView);
 
-                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        imageButtonCloseMember.setOnClickListener(new View.OnClickListener() {
                             @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                dialogInterface.dismiss();
+                            public void onClick(View v) {
+                                alertDialog.dismiss();
                             }
                         });
 
@@ -332,7 +335,9 @@ public class MembersFragment extends Fragment {
                         txtMembershipStartMemberDetail.setText(dataMemberSingle.getMembershipStartDate());
                         txtMembershipExpiryMemberDetail.setText(dataMemberSingle.getMembershipExpiryDate());
 
-                        AlertDialog alertDialog = builder.create();
+                        alertDialog = builder.create();
+                        alertDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+                        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                         alertDialog.show();
                     }
                 }
