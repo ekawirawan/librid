@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "254658866125",
+    "project_id": "librid-7c25d",
+    "storage_bucket": "librid-7c25d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:254658866125:android:3b4c8717f41ed1a09df284",
+        "android_client_info": {
+          "package_name": "com.uts.mobprog210040138"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCqq6vXIqLKjQlzTgFC5LSXUIvCZetpeKU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

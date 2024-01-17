@@ -1,8 +1,10 @@
 package com.uts.mobprog210040138;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -19,8 +21,12 @@ import com.uts.mobprog210040138.models.ModelBook;
 
 public class RecyclerViewCustomeAdapterBooks extends RecyclerView.Adapter<RecyclerViewCustomeAdapterBooks.ViewHolder> {
     Context ctx;
+    public interface OnMoreButtonClickListener{
+        void onMoreButtonClick(int position);
+    }
 
     public static ClickListener clickListener;
+    private RecyclerViewCustomeAdapterBooks.OnMoreButtonClickListener onMoreButtonClickListener;
 
     List<ModelBook> data;
 
@@ -37,17 +43,32 @@ public class RecyclerViewCustomeAdapterBooks extends RecyclerView.Adapter<Recycl
         void onItemClick(int position, View view);
     }
 
+    public void setOnMoreButtonClickListener(RecyclerViewCustomeAdapterBooks.OnMoreButtonClickListener onMoreButtonClickListener) {
+        this.onMoreButtonClickListener = onMoreButtonClickListener;
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView txtTitle3, txtAuthor3, txtStock3;
         public ImageView imageView4;
+        ImageButton btnMore;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-
+            btnMore = itemView.findViewById(R.id.btnMoreAction3);
             imageView4 = itemView.findViewById(R.id.imageView4);
             txtTitle3 = itemView.findViewById(R.id.txtTitle3);
             txtAuthor3 = itemView.findViewById(R.id.txtAuthor3);
             txtStock3 = itemView.findViewById(R.id.txtStock3);
+
+            btnMore.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.d("ViewHolder", "Button clicked");
+                    if (onMoreButtonClickListener != null) {
+                        onMoreButtonClickListener.onMoreButtonClick(getAdapterPosition());
+                    }
+                }
+            });
             itemView.setOnClickListener(this);
         }
 
@@ -82,6 +103,11 @@ public class RecyclerViewCustomeAdapterBooks extends RecyclerView.Adapter<Recycl
     @Override
     public int getItemCount() {
         return data.size();
+    }
+
+    public void setFilteredBooksAdpters(List<ModelBook> filteredBooks) {
+        this.data = filteredBooks;
+        notifyDataSetChanged();
     }
 
 
