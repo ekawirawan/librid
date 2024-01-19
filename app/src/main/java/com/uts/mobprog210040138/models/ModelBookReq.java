@@ -32,7 +32,7 @@ public class ModelBookReq {
     @Expose
     private String bookRackLocation;
 
-    public ModelBookReq(String titleP, String authorP, String publisherP, String publicationYearP, String isbnP, String imageUrlP, String bookRackLocationP, Integer stockP) {
+    public ModelBookReq(String titleP, String authorP, String publisherP, String publicationYearP, String isbnP, Integer stockP, String imageUrlP, String bookRackLocationP) {
         this.title = titleP;
         this.author = authorP;
         this.publisher = publisherP;
@@ -41,9 +41,6 @@ public class ModelBookReq {
         this.stock = stockP;
         this.imageUrl = imageUrlP;
         this.bookRackLocation = bookRackLocationP;
-    }
-
-    public ModelBookReq(int parseInt, String authorP, String publisherP, String publicationYearP, String isbnP, String imageUrlP, String bookRackLocationP) {
     }
 
     public String getTitle() {
@@ -94,19 +91,18 @@ public class ModelBookReq {
         this.stock = stock;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-
     public String getBookRackLocation() {
         return bookRackLocation;
     }
 
     public void setBookRackLocation(String bookRackLocation) {
         this.bookRackLocation = bookRackLocation;
+    }
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

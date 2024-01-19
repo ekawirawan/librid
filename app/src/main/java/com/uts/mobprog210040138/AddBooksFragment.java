@@ -33,6 +33,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -81,6 +82,8 @@ public class AddBooksFragment extends Fragment {
     View view;
     Button btnSave, btnCancel;
     ImageView imageAdd;
+
+    String imageUrl;
 
     TextInputLayout inputTitle, inputAuthor, inputPublisher, inputYear, inputISBN, inputStock, inputRack ;
     EditText txtTitle, txtAuthor, txtPublisher, txtYear, txtIsbn, txtStock, txtRack;
@@ -153,7 +156,7 @@ public class AddBooksFragment extends Fragment {
             inputPublisher.getEditText().setText("");
             inputISBN.getEditText().setText("");
             inputYear.getEditText().setText("");
-            inputStock.getEditText().setText(String.valueOf(""));
+            inputStock.getEditText().setText("");
             inputRack.getEditText().setText("");
             loadBook(bookId);
             btnSave.setOnClickListener(new View.OnClickListener() {
@@ -218,11 +221,9 @@ public class AddBooksFragment extends Fragment {
     }
 
     public void addBook(){
-        if(txtTitle.getText() !=null && txtAuthor.getText() !=null && txtPublisher.getText() !=null && txtIsbn.getText() !=null && txtStock.getText() !=null && txtYear.getText() !=null && txtRack.getText() !=null) {
-            ModelBookReq bookReq = new ModelBookReq (Integer.parseInt(txtStock.getText().toString()), txtTitle.getText().toString(), txtAuthor.getText().toString(), txtPublisher.getText().toString(), txtIsbn.getText().toString(), txtYear.getText().toString(), txtRack.getText().toString());
+        if(txtTitle.getText() !=null && txtAuthor.getText() !=null && txtPublisher.getText() !=null && txtYear.getText() !=null && txtIsbn.getText() !=null && txtStock.getText() !=null  && txtRack.getText() !=null) {
             uploadImage();
-            bookReq.getImageUrl();
-
+            ModelBookReq bookReq = new ModelBookReq (txtTitle.getText().toString(), txtAuthor.getText().toString(), txtPublisher.getText().toString(), txtYear.getText().toString(), txtIsbn.getText().toString(), Integer.valueOf(txtStock.getText().toString()), txtRack.getText().toString(), imageUrl);
 
             Call<ModelAPIResSingleBook> createBook = apiService.createBook(bookReq);
             createBook.enqueue(new Callback<ModelAPIResSingleBook>(){
@@ -260,16 +261,13 @@ public class AddBooksFragment extends Fragment {
     }
 
     private void selectImage() {
-        final CharSequence[] items = {"Take a photo", "Choose from library", "Cancel"};
+        final CharSequence[] items = {"Choose from library", "Cancel"};
         AlertDialog.Builder builder;
         builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(getString(R.string.app_name));
         builder.setIcon(R.mipmap.ic_launcher);
         builder.setItems(items, (dialog, item) -> {
-            if(items[item].equals("Take a photo")){
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(intent, 10);
-            } else if (items[item].equals("Choose from library")) {
+            if (items[item].equals("Choose from library")) {
                 Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 startActivityForResult(Intent.createChooser(intent, "Select Image"),20);
             } else if (items[item].equals("Cancel")) {
@@ -301,16 +299,16 @@ public class AddBooksFragment extends Fragment {
         }
 
         // request untuk ambil photo
-        if (requestCode == 10 && resultCode == RESULT_OK){
-            final Bundle extras = data.getExtras();
-            Thread thread = new Thread(() ->{
-                Bitmap bitmap = (Bitmap) extras.get("data");
-                imageAdd.post(() -> {
-                    imageAdd.setImageBitmap(bitmap);
-                });
-            });
-            thread.start();
-        }
+//        if (requestCode == 10 && resultCode == RESULT_OK){
+//            final Bundle extras = data.getExtras();
+//            Thread thread = new Thread(() ->{
+//                Bitmap bitmap = (Bitmap) extras.get("data");
+//                imageAdd.post(() -> {
+//                    imageAdd.setImageBitmap(bitmap);
+//                });
+//            });
+//            thread.start();
+//        }
     }
 
     private void uploadImage() {
@@ -347,9 +345,8 @@ public class AddBooksFragment extends Fragment {
                             Uri downloadUrl = task.getResult();
                             if (downloadUrl != null) {
                                 // Now you have the download URL, you can use it as needed
-                                String imageUrl = downloadUrl.toString();
+                                imageUrl = downloadUrl.toString();
                                 // Use imageUrl as needed (e.g., include it in your ModelBookReq)
-
                                 // Save imageUrl to API
                                 saveImageUrlToAPI(imageUrl);
                             }
@@ -365,17 +362,15 @@ public class AddBooksFragment extends Fragment {
     private void saveImageUrlToAPI(String imageUrl) {
         // Include imageUrl in your ModelBookReq and call the API to save the book with the image URL
         ModelBookReq bookReq = new ModelBookReq(
-                Integer.parseInt(txtStock.getText().toString()),
                 txtTitle.getText().toString(),
                 txtAuthor.getText().toString(),
                 txtPublisher.getText().toString(),
-                txtIsbn.getText().toString(),
                 txtYear.getText().toString(),
-                txtRack.getText().toString()
-
+                txtIsbn.getText().toString(),
+                Integer.parseInt(txtStock.getText().toString()),
+                txtRack.getText().toString(),
+                imageUrl
         );
-        bookReq.setImageUrl(imageUrl);
-
         // Call the API to save the book with the image URL
         Call<ModelAPIResSingleBook> createBook = apiService.createBook(bookReq);
         createBook.enqueue(new Callback<ModelAPIResSingleBook>() {
@@ -434,9 +429,12 @@ public class AddBooksFragment extends Fragment {
                         inputPublisher.getEditText().setText(dataBook.getPublisher());
                         inputYear.getEditText().setText(dataBook.getPublicationYear());
                         inputISBN.getEditText().setText(dataBook.getIsbn());
-                        inputStock.getEditText().setText(dataBook.getStock());
+                        inputStock.getEditText().setText(String.valueOf(dataBook.getStock()));
                         inputRack.getEditText().setText(dataBook.getBookRackLocation());
-
+                        Glide.with(ctx)
+                                .load(dataBook.getImageUrl())
+                                .placeholder(R.drawable.none)
+                                .into(imageAdd);
                     }
                 }
             }
@@ -451,7 +449,8 @@ public class AddBooksFragment extends Fragment {
 
     public void updateBook(String bookId) {
         if(txtTitle.getText() !=null && txtAuthor.getText() !=null && txtPublisher.getText() !=null && txtIsbn.getText() !=null && txtStock.getText() !=null && txtYear.getText() !=null && txtRack.getText() !=null) {
-            ModelBookReq bookReq = new ModelBookReq(Integer.parseInt(txtStock.getText().toString()), txtTitle.getText().toString(), txtAuthor.getText().toString(), txtPublisher.getText().toString(), txtIsbn.getText().toString(), txtYear.getText().toString(), txtRack.getText().toString());
+            uploadImage();
+            ModelBookReq bookReq = new ModelBookReq(txtTitle.getText().toString(), txtAuthor.getText().toString(), txtPublisher.getText().toString(), txtYear.getText().toString(), txtIsbn.getText().toString(), Integer.valueOf(txtStock.getText().toString()), txtRack.getText().toString(), imageUrl);
 
             Call<ModelAPIResSingleBook> updateBook = apiService.updateBook(bookId, bookReq);
             updateBook.enqueue(new Callback<ModelAPIResSingleBook>() {
