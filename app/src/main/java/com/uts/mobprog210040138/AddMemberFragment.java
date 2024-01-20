@@ -107,7 +107,7 @@ public class AddMemberFragment extends Fragment {
         String memberId;
         if(getArguments() != null){
             memberId = getArguments().getString("memberId");
-            txtTitlePage.setText("Edit a loans");
+            txtTitlePage.setText("Edit a Members");
             txtInputUsername.getEditText().setText("");
             txtInputFullName.getEditText().setText("");
             txtInputAddress.getEditText().setText("");
