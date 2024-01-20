@@ -148,7 +148,9 @@ public class MembersFragment extends Fragment {
 
 
     public void loadDataMember() {
-        onDataStart();
+        if(result == null) {
+            onDataStart();
+        }
         Call<ModelAPIResMember> getAllMember = apiService.getAllMember();
         getAllMember.enqueue(new Callback<ModelAPIResMember>() {
             @Override
@@ -332,8 +334,8 @@ public class MembersFragment extends Fragment {
                         txtAddressMemberDetail.setText(dataMemberSingle.getAddress());
                         txtEmailMemberDetail.setText(dataMemberSingle.getEmail());
                         txtPhoneNumberMemberDetail.setText(dataMemberSingle.getPhoneNumber());
-                        txtMembershipStartMemberDetail.setText(dataMemberSingle.getMembershipStartDate());
-                        txtMembershipExpiryMemberDetail.setText(dataMemberSingle.getMembershipExpiryDate());
+                        txtMembershipStartMemberDetail.setText(DateFormatterHelpers.formatLongDate(dataMemberSingle.getMembershipStartDate()));
+                        txtMembershipExpiryMemberDetail.setText(DateFormatterHelpers.formatLongDate(dataMemberSingle.getMembershipExpiryDate()));
 
                         alertDialog = builder.create();
                         alertDialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
