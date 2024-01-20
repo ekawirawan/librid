@@ -39,11 +39,12 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            android:scaleType="fitCenter"
             app:srcCompat="@drawable/none" />
 
         <TextView
             android:id="@+id/txtTitle3"
-            android:layout_width="225dp"
+            android:layout_width="220dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="9dp"
             android:layout_marginTop="5dp"

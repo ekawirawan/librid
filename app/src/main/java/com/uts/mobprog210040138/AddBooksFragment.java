@@ -9,17 +9,17 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
-import android.app.Activity;
 import android.net.Uri;
 
+
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 
 
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,20 +38,15 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.Firebase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.uts.mobprog210040138.helpers.ConfirmMessage;
 import com.uts.mobprog210040138.helpers.NotificationHelpers;
 import com.uts.mobprog210040138.models.ModelAPIResSingleBook;
-import com.uts.mobprog210040138.models.ModelAPIResSingleLoans;
-import com.uts.mobprog210040138.models.ModelAPIResSingleMember;
 import com.uts.mobprog210040138.models.ModelBook;
 import com.uts.mobprog210040138.models.ModelBookReq;
-import com.uts.mobprog210040138.models.ModelLoanReq;
 import com.uts.mobprog210040138.models.SharedDataViewModel;
 
 import retrofit2.Call;
@@ -84,12 +79,14 @@ public class AddBooksFragment extends Fragment {
     ImageView imageAdd;
 
     String imageUrl;
+    Boolean isUpdate = false;
 
     TextInputLayout inputTitle, inputAuthor, inputPublisher, inputYear, inputISBN, inputStock, inputRack ;
     EditText txtTitle, txtAuthor, txtPublisher, txtYear, txtIsbn, txtStock, txtRack;
     TextView txtTitlePage;
-    private static final int PICK_IMAGE_REQUEST = 1;
+
     private SharedDataViewModel sharedDataViewModel;
+
     ApiInterfaceBook apiService = APIClient.getClient().create(ApiInterfaceBook.class);
 
     public AddBooksFragment() {
@@ -159,9 +156,11 @@ public class AddBooksFragment extends Fragment {
             inputStock.getEditText().setText("");
             inputRack.getEditText().setText("");
             loadBook(bookId);
+            Log.d("argument", "ngedit cuy");
             btnSave.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    isUpdate = true;
                     updateBook(bookId);
                 }
             });
@@ -184,7 +183,7 @@ public class AddBooksFragment extends Fragment {
         imageAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                selectImage();
+               selectImage();
             }
         });
         return view;
@@ -212,29 +211,24 @@ public class AddBooksFragment extends Fragment {
 
     }
 
-    public void resetSharedDataViewModel() {
-        sharedDataViewModel.setBookId(null);
-        sharedDataViewModel.setTitle(null);
-        sharedDataViewModel.setMemberId(null);
-        sharedDataViewModel.setUsername(null);
-        sharedDataViewModel.setIdLoan(null);
-    }
 
     public void addBook(){
-        if(txtTitle.getText() !=null && txtAuthor.getText() !=null && txtPublisher.getText() !=null && txtYear.getText() !=null && txtIsbn.getText() !=null && txtStock.getText() !=null  && txtRack.getText() !=null) {
+        Log.d("arguments", "Add cuy");
+        if(txtTitle.getText() !=null && txtAuthor.getText() !=null && txtPublisher.getText() !=null && txtYear.getText() !=null && txtIsbn.getText() !=null && txtStock.getText() !=null && txtRack.getText() !=null) {
             uploadImage();
-            ModelBookReq bookReq = new ModelBookReq (txtTitle.getText().toString(), txtAuthor.getText().toString(), txtPublisher.getText().toString(), txtYear.getText().toString(), txtIsbn.getText().toString(), Integer.valueOf(txtStock.getText().toString()), txtRack.getText().toString(), imageUrl);
+            ModelBookReq bookReq = new ModelBookReq (txtTitle.getText().toString(), txtAuthor.getText().toString(), txtPublisher.getText().toString(), Integer.valueOf(txtYear.getText().toString()), txtIsbn.getText().toString(), Integer.valueOf(txtStock.getText().toString()), imageUrl, txtRack.getText().toString());
 
             Call<ModelAPIResSingleBook> createBook = apiService.createBook(bookReq);
             createBook.enqueue(new Callback<ModelAPIResSingleBook>(){
                 @Override
                 public void onResponse(Call<ModelAPIResSingleBook> call, Response<ModelAPIResSingleBook> response) {
                     if (response.code() != 201) {
-                        NotificationHelpers notification = new NotificationHelpers(ctx, "Opss..Something went wrong", NotificationHelpers.Status.DANGER);
+                        Log.d("images", "onResponse: cek" + imageUrl);
+                        NotificationHelpers notification = new NotificationHelpers(ctx, "Opss..Something went wrong a", NotificationHelpers.Status.DANGER);
                         notification.show();
                     } else {
                         if (response.body() == null){
-                            NotificationHelpers notification = new NotificationHelpers(ctx, "Opss..Something went wrong", NotificationHelpers.Status.DANGER);
+                            NotificationHelpers notification = new NotificationHelpers(ctx, "Opss..Something went wrong b", NotificationHelpers.Status.DANGER);
                             notification.show();
                         } else {
                             result = response.body();
@@ -253,7 +247,7 @@ public class AddBooksFragment extends Fragment {
 
                 @Override
                 public void onFailure(Call<ModelAPIResSingleBook> call, Throwable t) {
-                    NotificationHelpers notification = new NotificationHelpers(ctx, "Opss..Something went wrong", NotificationHelpers.Status.DANGER);
+                    NotificationHelpers notification = new NotificationHelpers(ctx, "Opss..Something went wrong c", NotificationHelpers.Status.DANGER);
                     notification.show();
                 }
             });
@@ -297,18 +291,6 @@ public class AddBooksFragment extends Fragment {
             });
             thread.start();
         }
-
-        // request untuk ambil photo
-//        if (requestCode == 10 && resultCode == RESULT_OK){
-//            final Bundle extras = data.getExtras();
-//            Thread thread = new Thread(() ->{
-//                Bitmap bitmap = (Bitmap) extras.get("data");
-//                imageAdd.post(() -> {
-//                    imageAdd.setImageBitmap(bitmap);
-//                });
-//            });
-//            thread.start();
-//        }
     }
 
     private void uploadImage() {
@@ -359,30 +341,38 @@ public class AddBooksFragment extends Fragment {
         });
     }
 
-    private void saveImageUrlToAPI(String imageUrl) {
-        // Include imageUrl in your ModelBookReq and call the API to save the book with the image URL
+
+    private void saveImageUrlToAPI(String bookId) {
+        // Include imageUrl in your ModelBookReq and call the API to save/update the book with the image URL
         ModelBookReq bookReq = new ModelBookReq(
                 txtTitle.getText().toString(),
                 txtAuthor.getText().toString(),
                 txtPublisher.getText().toString(),
-                txtYear.getText().toString(),
+                Integer.parseInt(txtYear.getText().toString()),
                 txtIsbn.getText().toString(),
                 Integer.parseInt(txtStock.getText().toString()),
-                txtRack.getText().toString(),
-                imageUrl
+                imageUrl,
+                txtRack.getText().toString()
         );
-        // Call the API to save the book with the image URL
-        Call<ModelAPIResSingleBook> createBook = apiService.createBook(bookReq);
-        createBook.enqueue(new Callback<ModelAPIResSingleBook>() {
+
+        // Determine whether to call createBook or updateBook based on the isUpdate parameter
+        Call<ModelAPIResSingleBook> apiCall;
+        if (isUpdate) {
+            apiCall = apiService.updateBook(bookId, bookReq); // Assuming you have the bookId for updating
+        } else {
+            apiCall = apiService.createBook(bookReq);
+        }
+
+        // Call the API to save/update the book with the image URL
+        apiCall.enqueue(new Callback<ModelAPIResSingleBook>() {
             @Override
             public void onResponse(Call<ModelAPIResSingleBook> call, Response<ModelAPIResSingleBook> response) {
+                // Handle the response
                 if (response.code() != 201) {
-                    NotificationHelpers notification = new NotificationHelpers(ctx, "Opss..Something went wrong", NotificationHelpers.Status.DANGER);
-                    notification.show();
+                    showNotification("Opss..Something went wrong", NotificationHelpers.Status.DANGER);
                 } else {
                     if (response.body() == null) {
-                        NotificationHelpers notification = new NotificationHelpers(ctx, "Opss..Something went wrong", NotificationHelpers.Status.DANGER);
-                        notification.show();
+                        showNotification("Opss..Something went wrong", NotificationHelpers.Status.DANGER);
                     } else {
                         result = response.body();
                         dataBook = result.getData();
@@ -392,19 +382,25 @@ public class AddBooksFragment extends Fragment {
                                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                                 .addToBackStack(null)
                                 .commit();
-                        NotificationHelpers notification = new NotificationHelpers(ctx, "Book added successfully", NotificationHelpers.Status.SUCCESS);
-                        notification.show();
+                        showNotification("Book " + (isUpdate ? "updated" : "added") + " successfully", NotificationHelpers.Status.SUCCESS);
                     }
                 }
             }
 
             @Override
             public void onFailure(Call<ModelAPIResSingleBook> call, Throwable t) {
-                NotificationHelpers notification = new NotificationHelpers(ctx, "Opss..Something went wrong", NotificationHelpers.Status.DANGER);
-                notification.show();
+                // Handle the failure
+                showNotification("Opss..Something went wrong", NotificationHelpers.Status.DANGER);
             }
         });
     }
+
+    private void showNotification(String message, NotificationHelpers.Status status) {
+        NotificationHelpers notification = new NotificationHelpers(ctx, message, status);
+        notification.show();
+    }
+
+
 
 
 
@@ -427,14 +423,14 @@ public class AddBooksFragment extends Fragment {
                         inputTitle.getEditText().setText(dataBook.getTitle());
                         inputAuthor.getEditText().setText(dataBook.getAuthor());
                         inputPublisher.getEditText().setText(dataBook.getPublisher());
-                        inputYear.getEditText().setText(dataBook.getPublicationYear());
+                        inputYear.getEditText().setText(String.valueOf(dataBook.getPublicationYear()));
                         inputISBN.getEditText().setText(dataBook.getIsbn());
                         inputStock.getEditText().setText(String.valueOf(dataBook.getStock()));
-                        inputRack.getEditText().setText(dataBook.getBookRackLocation());
                         Glide.with(ctx)
                                 .load(dataBook.getImageUrl())
                                 .placeholder(R.drawable.none)
                                 .into(imageAdd);
+                        inputRack.getEditText().setText(dataBook.getBookRackLocation());
                     }
                 }
             }
@@ -450,7 +446,7 @@ public class AddBooksFragment extends Fragment {
     public void updateBook(String bookId) {
         if(txtTitle.getText() !=null && txtAuthor.getText() !=null && txtPublisher.getText() !=null && txtIsbn.getText() !=null && txtStock.getText() !=null && txtYear.getText() !=null && txtRack.getText() !=null) {
             uploadImage();
-            ModelBookReq bookReq = new ModelBookReq(txtTitle.getText().toString(), txtAuthor.getText().toString(), txtPublisher.getText().toString(), txtYear.getText().toString(), txtIsbn.getText().toString(), Integer.valueOf(txtStock.getText().toString()), txtRack.getText().toString(), imageUrl);
+            ModelBookReq bookReq = new ModelBookReq(txtTitle.getText().toString(), txtAuthor.getText().toString(), txtPublisher.getText().toString(), Integer.valueOf(txtYear.getText().toString()), txtIsbn.getText().toString(), Integer.valueOf(txtStock.getText().toString()),  imageUrl != null ? imageUrl : dataBook.getImageUrl(), txtRack.getText().toString());
 
             Call<ModelAPIResSingleBook> updateBook = apiService.updateBook(bookId, bookReq);
             updateBook.enqueue(new Callback<ModelAPIResSingleBook>() {
@@ -466,7 +462,6 @@ public class AddBooksFragment extends Fragment {
                         } else {
                             result = response.body();
                             dataBook = result.getData();
-                            resetSharedDataViewModel();
                             BooksFragment booksFragment = new BooksFragment();
                             getParentFragmentManager().beginTransaction()
                                     .replace(R.id.frame_layout, booksFragment)
@@ -485,7 +480,6 @@ public class AddBooksFragment extends Fragment {
                     notification.show();
                 }
             });
-
         }
     }
 

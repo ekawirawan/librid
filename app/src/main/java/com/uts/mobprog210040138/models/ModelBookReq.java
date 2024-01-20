@@ -18,7 +18,7 @@ public class ModelBookReq {
     private String publisher;
     @SerializedName("publication_year")
     @Expose
-    private String publicationYear;
+    private Integer publicationYear;
     @SerializedName("isbn")
     @Expose
     private String isbn;
@@ -32,7 +32,7 @@ public class ModelBookReq {
     @Expose
     private String bookRackLocation;
 
-    public ModelBookReq(String titleP, String authorP, String publisherP, String publicationYearP, String isbnP, Integer stockP, String imageUrlP, String bookRackLocationP) {
+    public ModelBookReq(String titleP, String authorP, String publisherP, Integer publicationYearP, String isbnP, Integer stockP, String imageUrlP, String bookRackLocationP) {
         this.title = titleP;
         this.author = authorP;
         this.publisher = publisherP;
@@ -67,11 +67,11 @@ public class ModelBookReq {
         this.publisher = publisher;
     }
 
-    public String getPublicationYear() {
+    public Integer getPublicationYear() {
         return publicationYear;
     }
 
-    public void setPublicationYear(String publicationYear) {
+    public void setPublicationYear(Integer publicationYear) {
         this.publicationYear = publicationYear;
     }
 
@@ -91,13 +91,6 @@ public class ModelBookReq {
         this.stock = stock;
     }
 
-    public String getBookRackLocation() {
-        return bookRackLocation;
-    }
-
-    public void setBookRackLocation(String bookRackLocation) {
-        this.bookRackLocation = bookRackLocation;
-    }
     public String getImageUrl() {
         return imageUrl;
     }
@@ -105,4 +98,13 @@ public class ModelBookReq {
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
+
+    public String getBookRackLocation() {
+        return bookRackLocation;
+    }
+
+    public void setBookRackLocation(String bookRackLocation) {
+        this.bookRackLocation = bookRackLocation;
+    }
+
 }
