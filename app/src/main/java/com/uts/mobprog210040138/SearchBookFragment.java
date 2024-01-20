@@ -125,7 +125,7 @@ public class SearchBookFragment extends Fragment {
                         txtInfoBook.setVisibility(View.INVISIBLE);
                         result = response.body();
                         dataBook = result.getData();
-                        adapterBook = new RecyclerViewCustomeAdapterBooks(ctx, dataBook);
+                        adapterBook = new RecyclerViewCustomeAdapterBooks(ctx, dataBook, false);
 
                         adapterBook.setOnItemCLickListener(new RecyclerViewCustomeAdapterBooks.ClickListener() {
                             @Override
@@ -198,13 +198,13 @@ public class SearchBookFragment extends Fragment {
                         txtInfoBook.setText("Opss..Book data not found");
                         txtInfoBook.setVisibility(View.VISIBLE);
                         progressBarHelpers.hide();
-                        adapterBook = new RecyclerViewCustomeAdapterBooks(ctx, Collections.emptyList());
+                        adapterBook = new RecyclerViewCustomeAdapterBooks(ctx, Collections.emptyList(), false);
                         recyclerViewBook.setAdapter(adapterBook);
                     } else {
                         txtInfoBook.setVisibility(View.INVISIBLE);
                         result = response.body();
                         dataResSearch = result.getData();
-                        adapterBook = new RecyclerViewCustomeAdapterBooks(ctx, dataResSearch);
+                        adapterBook = new RecyclerViewCustomeAdapterBooks(ctx, dataResSearch, false);
 
                         adapterBook.setOnItemCLickListener(new RecyclerViewCustomeAdapterBooks.ClickListener() {
                             @Override
@@ -228,7 +228,7 @@ public class SearchBookFragment extends Fragment {
 
     private void resetSearch() {
         txtInfoBook.setVisibility(View.INVISIBLE);
-        adapterBook = new RecyclerViewCustomeAdapterBooks(ctx, dataBook);
+        adapterBook = new RecyclerViewCustomeAdapterBooks(ctx, dataBook, false);
         recyclerViewBook.setAdapter(adapterBook);
     }
 }

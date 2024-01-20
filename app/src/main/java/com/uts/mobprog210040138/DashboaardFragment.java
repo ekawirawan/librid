@@ -136,7 +136,7 @@ public class DashboaardFragment extends Fragment {
 
         progressBar1 = view.findViewById(R.id.progressBar1);
 
-        customAdapter = new RecyclerViewCustomeAdapterBooks(ctx, data1);
+        customAdapter = new RecyclerViewCustomeAdapterBooks(ctx, data1, false);
 
         //Inisialisasi id recyclerView dashboard
         recyclerBook = view.findViewById(R.id.recyclerBook);
@@ -231,7 +231,7 @@ public class DashboaardFragment extends Fragment {
                     }else{
                         result5 = response.body();
                         data3 = result5.getData();
-                        customAdapter = new RecyclerViewCustomeAdapterBooks(ctx, data3);
+                        customAdapter = new RecyclerViewCustomeAdapterBooks(ctx, data3, false);
 
 
                         customAdapter.setOnItemCLickListener(new RecyclerViewCustomeAdapterBooks.ClickListener() {

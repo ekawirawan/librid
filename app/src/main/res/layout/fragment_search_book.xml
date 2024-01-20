@@ -9,7 +9,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#D4D4D4">
+        android:background="#F4F4F4">
 
         <SearchView
             android:id="@+id/searchViewBookChoose"

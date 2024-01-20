@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#D4D4D4"
+    android:background="#F4F4F4"
     tools:context=".MembersFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -62,8 +62,8 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             android:backgroundTint="#2A810C"
-            android:text="+ Add Member"
             android:elevation="10dp"
+            android:text="+ Add Member"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

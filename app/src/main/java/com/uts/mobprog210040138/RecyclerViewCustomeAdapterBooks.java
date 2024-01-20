@@ -21,6 +21,7 @@ import com.uts.mobprog210040138.models.ModelBook;
 
 public class RecyclerViewCustomeAdapterBooks extends RecyclerView.Adapter<RecyclerViewCustomeAdapterBooks.ViewHolder> {
     Context ctx;
+    Boolean withBottomSheet;
     public interface OnMoreButtonClickListener{
         void onMoreButtonClick(int position);
     }
@@ -30,9 +31,10 @@ public class RecyclerViewCustomeAdapterBooks extends RecyclerView.Adapter<Recycl
 
     List<ModelBook> data;
 
-    public RecyclerViewCustomeAdapterBooks(Context context, List<ModelBook> dataBook) {
+    public RecyclerViewCustomeAdapterBooks(Context context, List<ModelBook> dataBook, Boolean withBottomSheetP) {
         ctx = context;
         data = dataBook;
+        withBottomSheet = withBottomSheetP;
     }
 
     public void setOnItemCLickListener(ClickListener clickListener){
@@ -59,6 +61,7 @@ public class RecyclerViewCustomeAdapterBooks extends RecyclerView.Adapter<Recycl
             txtTitle3 = itemView.findViewById(R.id.txtTitle3);
             txtAuthor3 = itemView.findViewById(R.id.txtAuthor3);
             txtStock3 = itemView.findViewById(R.id.txtStock3);
+            if (!withBottomSheet){btnMore.setVisibility(View.GONE);}
 
             btnMore.setOnClickListener(new View.OnClickListener() {
                 @Override

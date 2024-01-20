@@ -154,7 +154,7 @@ public class BooksFragment extends Fragment {
                     } else {
                         result = response.body();
                         dataBook = result.getData();
-                        adapterBooks = new RecyclerViewCustomeAdapterBooks(ctx, dataBook);
+                        adapterBooks = new RecyclerViewCustomeAdapterBooks(ctx, dataBook, true);
                         adapterBooks.setOnItemCLickListener(new RecyclerViewCustomeAdapterBooks.ClickListener() {
                             @Override
                             public void onItemClick(int position, View view) {
@@ -262,7 +262,7 @@ public class BooksFragment extends Fragment {
 
     private void resetSearch() {
         // Kembalikan ke data awal atau tampilkan semua data
-        adapterBooks = new RecyclerViewCustomeAdapterBooks(ctx, dataBook);
+        adapterBooks = new RecyclerViewCustomeAdapterBooks(ctx, dataBook, true);
         recyclerView1.setAdapter(adapterBooks);
         setTotalBook(dataBook);
     }
