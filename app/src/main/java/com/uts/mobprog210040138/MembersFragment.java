@@ -69,7 +69,7 @@ public class MembersFragment extends Fragment {
     private View view;
     private ProgressBar progressBarMember;
     private AlertDialog alertDialog;
-    private ImageButton imageButtonCloseMember;
+
 
 
     // TODO: Rename parameter arguments, choose names that match
@@ -143,7 +143,7 @@ public class MembersFragment extends Fragment {
         });
 
         return view;
-        //return inflater.inflate(R.layout.fragment_members, container, false);
+
     }
 
 
@@ -164,7 +164,7 @@ public class MembersFragment extends Fragment {
                     }else {
                         result = response.body();
                         dataMember = result.getData();
-                        adapterMember = new RecyclerViewCustomAdapterMembers(ctx, dataMember);
+                        adapterMember = new RecyclerViewCustomAdapterMembers(ctx, dataMember, true);
 
                         adapterMember.setOnItemCLickListener(new RecyclerViewCustomAdapterMembers.ClickListener() {
                             @Override
@@ -204,12 +204,9 @@ public class MembersFragment extends Fragment {
                 public boolean onQueryTextChange(String newText) {
                     String query = newText.trim().toLowerCase();
 
-                    // Cek apakah teks pencarian tidak kosong
                     if (!query.isEmpty()) {
-                        // Lakukan pencarian dan perbarui RecyclerView
                         performSearch(query);
                     } else {
-                        // Jika teks pencarian kosong, kembalikan ke data awal
                         resetSearch();
                     }
 
@@ -217,7 +214,7 @@ public class MembersFragment extends Fragment {
                 }
             });
         } catch (Exception e){
-            Log.d("search",e.toString());
+
         }
     }
 
@@ -237,7 +234,7 @@ public class MembersFragment extends Fragment {
                         result = response.body();
                         dataResSearchMember = result.getData();
                         Log.d("Search Results", dataResSearchMember.toString());
-                        adapterMember = new RecyclerViewCustomAdapterMembers(ctx, dataResSearchMember);
+                        adapterMember = new RecyclerViewCustomAdapterMembers(ctx, dataResSearchMember, true);
                         recyclerView1.setAdapter(adapterMember);
                         setTotalMember(dataResSearchMember);
 
@@ -253,8 +250,7 @@ public class MembersFragment extends Fragment {
     }
 
     private void resetSearch() {
-        // Kembalikan ke data awal atau tampilkan semua data
-        adapterMember = new RecyclerViewCustomAdapterMembers(ctx, dataMember);
+        adapterMember = new RecyclerViewCustomAdapterMembers(ctx, dataMember, true);
         recyclerView1.setAdapter(adapterMember);
         setTotalMember(dataMember);
     }
@@ -379,7 +375,6 @@ public class MembersFragment extends Fragment {
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                         .addToBackStack(null)
                         .commit();
-              //  Toast.makeText(ctx,"Create a short is Clicked",Toast.LENGTH_SHORT).show();
 
             }
         });
@@ -425,14 +420,12 @@ public class MembersFragment extends Fragment {
     }
 
     public void onDataStart() {
-        // Called when data loading starts
         if (progressBarMember != null) {
             progressBarMember.setVisibility(View.VISIBLE);
         }
     }
 
     public void onDataComplete() {
-        // Called when data loading is complete
         if (progressBarMember != null) {
             progressBarMember.setVisibility(View.GONE);
         }

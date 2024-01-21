@@ -18,6 +18,7 @@ import com.uts.mobprog210040138.models.ModelMember;
 
 public class RecyclerViewCustomAdapterMembers extends RecyclerView.Adapter<RecyclerViewCustomAdapterMembers.ViewHolder> {
     Context ctx;
+    Boolean withBottomSheet;
     public interface OnMoreButtonClickListener {
         void onMoreButtonClick(int position);
     }
@@ -25,9 +26,10 @@ public class RecyclerViewCustomAdapterMembers extends RecyclerView.Adapter<Recyc
     private RecyclerViewCustomAdapterMembers.OnMoreButtonClickListener onMoreButtonClickListener;
     List<ModelMember> data;
 
-    public RecyclerViewCustomAdapterMembers(Context context, List<ModelMember> dataMember) {
+    public RecyclerViewCustomAdapterMembers(Context context, List<ModelMember> dataMember, Boolean withBottomSheetP) {
         ctx = context;
         data = dataMember;
+        withBottomSheet = withBottomSheetP;
     }
 
     public void setOnItemCLickListener(ClickListener clickListener){
@@ -51,6 +53,9 @@ public class RecyclerViewCustomAdapterMembers extends RecyclerView.Adapter<Recyc
             btnMore = itemView.findViewById(R.id.btnMoreAction);
             txtUsername = itemView.findViewById(R.id.txtUsername);
             txtFullName = itemView.findViewById(R.id.txtFullName);
+            if (!withBottomSheet){
+                btnMore.setVisibility(View.GONE);
+            }
 
             btnMore.setOnClickListener(new View.OnClickListener() {
                 @Override
