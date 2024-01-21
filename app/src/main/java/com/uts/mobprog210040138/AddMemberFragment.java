@@ -184,7 +184,7 @@ public class AddMemberFragment extends Fragment {
                                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                                     .addToBackStack(null)
                                     .commit();
-                            NotificationHelpers notification = new NotificationHelpers(ctx, "Loans added successfully", NotificationHelpers.Status.SUCCESS);
+                            NotificationHelpers notification = new NotificationHelpers(ctx, "Members added successfully", NotificationHelpers.Status.SUCCESS);
                             notification.show();
                         }
                     }
@@ -207,7 +207,7 @@ public class AddMemberFragment extends Fragment {
             updateMember.enqueue(new Callback<ModelAPIResSingleMember>(){
                 @Override
                 public void onResponse(Call<ModelAPIResSingleMember> call, Response<ModelAPIResSingleMember> response) {
-                    if (response.code() != 201) {
+                    if (response.code() != 200) {
                         NotificationHelpers notification = new NotificationHelpers(ctx, "Opss..Something went wrong", NotificationHelpers.Status.DANGER);
                         notification.show();
                     } else {
@@ -223,7 +223,7 @@ public class AddMemberFragment extends Fragment {
                                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                                     .addToBackStack(null)
                                     .commit();
-                            NotificationHelpers notification = new NotificationHelpers(ctx, "Loans added successfully", NotificationHelpers.Status.SUCCESS);
+                            NotificationHelpers notification = new NotificationHelpers(ctx, "Members added successfully", NotificationHelpers.Status.SUCCESS);
                             notification.show();
                         }
                     }
