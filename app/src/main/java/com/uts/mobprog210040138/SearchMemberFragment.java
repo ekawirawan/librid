@@ -125,7 +125,7 @@ public class SearchMemberFragment extends Fragment {
                         txtInfoMember.setVisibility(View.INVISIBLE);
                         result = response.body();
                         dataMember = result.getData();
-                        adapterMember = new RecyclerViewCustomAdapterMembers(ctx, dataMember);
+                        adapterMember = new RecyclerViewCustomAdapterMembers(ctx, dataMember, false);
 
                         adapterMember.setOnItemCLickListener(new RecyclerViewCustomAdapterMembers.ClickListener() {
                             @Override
@@ -202,13 +202,13 @@ public class SearchMemberFragment extends Fragment {
                         txtInfoMember.setText("Opss..Member not found");
                         txtInfoMember.setVisibility(View.VISIBLE);
                         progressBarHelpers.hide();
-                        adapterMember = new RecyclerViewCustomAdapterMembers(ctx, Collections.emptyList());
+                        adapterMember = new RecyclerViewCustomAdapterMembers(ctx, Collections.emptyList(), false);
                         recyclerViewMember.setAdapter(adapterMember);
                     } else {
                         txtInfoMember.setVisibility(View.INVISIBLE);
                         result = response.body();
                         dataResSearch = result.getData();
-                        adapterMember = new RecyclerViewCustomAdapterMembers(ctx, dataResSearch);
+                        adapterMember = new RecyclerViewCustomAdapterMembers(ctx, dataResSearch, false);
 
                         adapterMember.setOnItemCLickListener(new RecyclerViewCustomAdapterMembers.ClickListener() {
                             @Override
@@ -233,7 +233,7 @@ public class SearchMemberFragment extends Fragment {
     }
 
     private void resetSearch() {
-        adapterMember = new RecyclerViewCustomAdapterMembers(ctx, dataMember);
+        adapterMember = new RecyclerViewCustomAdapterMembers(ctx, dataMember, false);
         recyclerViewMember.setAdapter(adapterMember);
         txtInfoMember.setVisibility(View.INVISIBLE);
     }

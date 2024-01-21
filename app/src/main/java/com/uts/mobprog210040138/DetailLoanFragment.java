@@ -72,83 +72,11 @@ public class DetailLoanFragment extends Fragment {
         });
 
         ImageButton buttonOpenSheet = view.findViewById(R.id.btnMoreAction);
-//        buttonOpenSheet.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                showBottomSheetLoan();
-//            }
-//        });
+
 
         return view;
     }
 
-//    public void showBottomSheetLoan() {
-//        final Dialog dialog = new Dialog(ctx);
-//        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-//        dialog.setContentView(R.layout.fragment_bottom_action);
-//
-//        LinearLayout returnLayout = dialog.findViewById(R.id.layoutReturn);
-//        LinearLayout editLayout = dialog.findViewById(R.id.layoutEdit);
-//        LinearLayout deleteLayout = dialog.findViewById(R.id.layoutDelete);
-//        ImageView cancelButton = dialog.findViewById(R.id.cancelButton);
-//
-//        returnLayout.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                dialog.dismiss();
-//                ConfirmMessage confirmMessage = new ConfirmMessage(ctx);
-//                confirmMessage.setMessage("Are you sure to return this loans?");
-//                confirmMessage.setTextButtonYes("Yes");
-//                confirmMessage.setTextButtonCancle("Cancel");
-//                confirmMessage.show();
-//
-//                confirmMessage.setConfirmationCallback(new ConfirmMessage.ConfirmationCallback() {
-//                    @Override
-//                    public void onConfirmation(boolean isConfirmed) {
-//                        if (isConfirmed) {
-//                            Log.d("onConfirm", "Dikonfirmasi");
-//                        } else {
-//                            Log.d("onConfirm", "Dicancle");
-//                        }
-//                    }
-//                });
-//
-//            }
-//        });
-//
-//        editLayout.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//                dialog.dismiss();
-//                Toast.makeText(ctx,"Create a short is Clicked",Toast.LENGTH_SHORT).show();
-//
-//            }
-//        });
-//
-//        deleteLayout.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//                dialog.dismiss();
-//                Toast.makeText(ctx,"Go live is Clicked",Toast.LENGTH_SHORT).show();
-//
-//            }
-//        });
-//
-//        cancelButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                dialog.dismiss();
-//            }
-//        });
-//
-//        dialog.show();
-//        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
-//        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-//        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
-//        dialog.getWindow().setGravity(Gravity.BOTTOM);
-//    }
 
     public void showDetailLoans (String idLoan) {
         Call<ModelAPIResSingleLoans> getLoanById = apiService.getLoanById(idLoan);
