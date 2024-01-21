@@ -29,6 +29,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.uts.mobprog210040138.helpers.ConfirmMessage;
+import com.uts.mobprog210040138.helpers.NotificationHelpers;
+import com.uts.mobprog210040138.helpers.ProgressBarHelpers;
 import com.uts.mobprog210040138.models.ModelAPIResBook;
 import com.uts.mobprog210040138.models.ModelAPIResSingleBook;
 import com.uts.mobprog210040138.models.ModelAPIResSingleMember;
@@ -69,7 +71,7 @@ public class BooksFragment extends Fragment {
     private List<ModelBook> dataBook, dataSearch = new ArrayList<>();
     private List<ModelBook> filteredBooks = new ArrayList<>();
 
-    private TextView txtTotalBooks;
+    private TextView txtTotalBooks, txtInfoBook;
 
     public RecyclerView recyclerView1;
 
@@ -77,6 +79,7 @@ public class BooksFragment extends Fragment {
 
     private RecyclerViewCustomeAdapterBooks adapterBooks;
     ProgressBar progressBarBook;
+    ProgressBarHelpers progressBarHelpers;
 
     private View view;
     Button btnAddBook;
@@ -112,8 +115,11 @@ public class BooksFragment extends Fragment {
         recyclerView1 = view.findViewById(R.id.recycleBook);
         progressBarBook = view.findViewById(R.id.progressBarBook);
 
+        progressBarHelpers = new ProgressBarHelpers(progressBarBook);
+
         searchViewBook = view.findViewById(R.id.searchViewBook);
         btnAddBook = view.findViewById(R.id.buttonAdd);
+        txtInfoBook = view.findViewById(R.id.txtInfoBook);
 
         LinearLayoutManager manager = new LinearLayoutManager(ctx);
         recyclerView1.setLayoutManager(manager);
@@ -146,12 +152,18 @@ public class BooksFragment extends Fragment {
             @Override
             public void onResponse(Call<ModelAPIResBook> call, Response<ModelAPIResBook> response) {
                 if (response.code() != 200) {
-                    Toast.makeText(getContext(), "code" + response.code(),
-                            Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(getContext(), "code" + response.code(),
+//                            Toast.LENGTH_SHORT).show();
+                    NotificationHelpers notification = new NotificationHelpers(ctx, "Opss..Failed to load Books data", NotificationHelpers.Status.DANGER);
+                    notification.show();
+                    progressBarHelpers.hide();
                 } else {
-                    if (response.body() == null) {
-
+                    if (response.body().getData().size() == 0) {
+                        txtInfoBook.setText("Opss..Books data is empty");
+                        txtInfoBook.setVisibility(View.VISIBLE);
+                        progressBarHelpers.hide();
                     } else {
+                        txtInfoBook.setVisibility(View.INVISIBLE);
                         result = response.body();
                         dataBook = result.getData();
                         adapterBooks = new RecyclerViewCustomeAdapterBooks(ctx, dataBook, true);
@@ -173,37 +185,45 @@ public class BooksFragment extends Fragment {
                         adapterBooks.notifyDataSetChanged();
                         setTotalBook(dataBook);
                         onDataComplete();
+                        progressBarHelpers.hide();
                     }
                 }
             }
 
             @Override
             public void onFailure(Call<ModelAPIResBook> call, Throwable t) {
-
+                NotificationHelpers notification = new NotificationHelpers(ctx, "Opss..Failed to load books data", NotificationHelpers.Status.DANGER);
+                notification.show();
+                progressBarHelpers.hide();
             }
         });
     }
 
     public void SearchBook(){
-        searchViewBook.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                if (dataBook != null) {
-                    // Lakukan pencarian dan perbarui RecyclerView
-                    filterBook(newText);
-                } else {
-                    // Jika teks pencarian kosong, kembalikan ke data awal
-                    resetSearch();
+        if (searchViewBook != null){
+            searchViewBook.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String newtext) {
+                    return false;
                 }
-                return true;
-            }
-        });
 
+                @Override
+                public boolean onQueryTextChange(String newText) {
+                    onDataStart();
+                    if (dataBook != null) {
+                        // Lakukan pencarian dan perbarui RecyclerView
+                        filterBook(newText);
+                    }if(filteredBooks.size() == 0){
+                        txtInfoBook.setVisibility(View.VISIBLE);
+                        txtInfoBook.setText("no book named " + (newText));
+                    } else {
+                        txtInfoBook.setVisibility(View.GONE);
+                    }
+                    onDataComplete();
+                    return true;
+                }
+            });
+        }
     }
 
     private void filterBook(String text) {
@@ -260,12 +280,12 @@ public class BooksFragment extends Fragment {
 //        });
 //    }
 
-    private void resetSearch() {
-        // Kembalikan ke data awal atau tampilkan semua data
-        adapterBooks = new RecyclerViewCustomeAdapterBooks(ctx, dataBook, true);
-        recyclerView1.setAdapter(adapterBooks);
-        setTotalBook(dataBook);
-    }
+//    private void resetSearch() {
+//        // Kembalikan ke data awal atau tampilkan semua data
+//        adapterBooks = new RecyclerViewCustomeAdapterBooks(ctx, dataBook, true);
+//        recyclerView1.setAdapter(adapterBooks);
+//        setTotalBook(dataBook);
+//    }
 
     public void setTotalBook(List<ModelBook> data) {
         String wordBook = "Book";
@@ -354,13 +374,17 @@ public class BooksFragment extends Fragment {
             @Override
             public void onResponse(Call<ModelAPIResSingleBook> call, Response<ModelAPIResSingleBook> response) {
                 if (response.code() != 200) {
-
+                    NotificationHelpers notification = new NotificationHelpers(ctx, "Opss..Failed to delete book", NotificationHelpers.Status.DANGER);
+                    notification.show();
                 } else {
                     if (response.body() == null) {
-
+                        NotificationHelpers notification = new NotificationHelpers(ctx, "Opss..Failed to delete book", NotificationHelpers.Status.DANGER);
+                        notification.show();
                     } else {
                         loadDataBook();
                         adapterBooks.notifyDataSetChanged();
+                        NotificationHelpers notification = new NotificationHelpers(ctx, "Book deleted successfully", NotificationHelpers.Status.SUCCESS);
+                        notification.show();
                     }
                 }
             }
